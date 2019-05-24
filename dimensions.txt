@@ -1,0 +1,9 @@
+room 3.4x3.40
+door (0.4, 1 width)
+bed 2x0.8
+table 1.4x0.8
+table O 0.9x0.7
+shelf 0.8x0.35
+sofa 2x1
+credenza 0.55x0.45 (drawer side)
+chair 0.5x0.4
