@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProfilerDatabase;
+using ProfilerLogic;
+using ProfilerModels;
+using ProfilerModels.Infrastructure;
 
 namespace Profiler
 {
@@ -30,7 +30,12 @@ namespace Profiler
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            var a = new DbContextOptionsBuilder();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddDbContext<DatabaseContext>(x => x.UseSqlServer(Configuration["ConnectionString:HomePcDb"]));
 
+            services.AddScoped<IDataRepository<User>, UserRepository>();
+            services.AddScoped(x => new UserManager(x.GetService<IDataRepository<User>>()));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

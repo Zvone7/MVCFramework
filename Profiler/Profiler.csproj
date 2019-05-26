@@ -5,8 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="jQuery" Version="3.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scripts\Libraries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\Scripts\shared.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProfilerLogic\ProfilerLogic.csproj" />
+    <ProjectReference Include="..\ProfilerModels\ProfilerModels.csproj" />
   </ItemGroup>
 
 </Project>

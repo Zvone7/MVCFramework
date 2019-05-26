@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProfilerDatabase\ProfilerDatabase.csproj" />
+    <ProjectReference Include="..\ProfilerModels\ProfilerModels.csproj" />
+  </ItemGroup>
+
+</Project>
