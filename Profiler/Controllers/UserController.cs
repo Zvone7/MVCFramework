@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Profiler.Models;
 using ProfilerLogic;
 using ProfilerModels;
 using System;
@@ -7,9 +8,7 @@ using System.Security.Claims;
 
 namespace Profiler.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : Controller
     {
         private readonly UserManager _userManager;
         public UserController(UserManager userManager)
@@ -17,23 +16,16 @@ namespace Profiler.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet]
-        [Route("GetUserByUsername")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Int32> GetUserByUsername(String username)
         {
             if (username.Equals("admin")) { return 1; }
             else { return -1; }
         }
 
-        [HttpGet]
-        [Route("GetUserById")]
         public ActionResult<User> GetUserById(Int32 id)
         {
             return _userManager.GetUserById(id);
         }
-
 
         private string GetRedirectUrl(string returnUrl)
         {
@@ -45,26 +37,7 @@ namespace Profiler.Controllers
             return returnUrl;
         }
 
-        //[AllowAnonymous]
-        //[HttpPost("authenticate")]
-        //[HttpPost]
-        [Route("Authenticate")]
-        public ActionResult Authenticate([FromBody]String username, String password)
-        {
-            //var user = _userService.Authenticate(userParam.Username, userParam.Password);
-            var user = _userManager.GetUserById(1);
-
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
-            return Ok(user);
-        }
-
-
-
-        [HttpPost]
-        [Route("LogIn")]
-        public ActionResult<String> LogIn([FromBody]String username, String password)
+        public ActionResult<String> LogIn([FromBody]UserLogin userLogin)
         {
             //var _userLogic = new UserLogic();
             //MyUserDto user = _userLogic.TryLogin(model);
