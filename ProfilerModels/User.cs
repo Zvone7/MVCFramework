@@ -16,6 +16,8 @@ namespace ProfilerModels
         public String Salt { get; set; }
         public Boolean IsActive { get; set; }
         public DateTime? DateJoined { get; set; }
+        public string Role { get; set; }
+        public string Token { get; set; }
 
         //public User(Int32 id, String username, String name, String lastName)
         //{

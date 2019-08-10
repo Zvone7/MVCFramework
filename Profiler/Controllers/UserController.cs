@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProfilerLogic;
 using ProfilerModels;
+using System;
+using System.Security.Claims;
 
 namespace Profiler.Controllers
 {
@@ -35,10 +34,71 @@ namespace Profiler.Controllers
             return _userManager.GetUserById(id);
         }
 
-        //eg: GET api/users/{id}/friends
-        //[HttpGet]
-        //[Route("{id:guid}/friends")]
-        //public IEnumerable<User> Friends(Guid id) { ...}
 
+        private string GetRedirectUrl(string returnUrl)
+        {
+            if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                return Url.Action("login", "login");
+            }
+
+            return returnUrl;
+        }
+
+        //[AllowAnonymous]
+        //[HttpPost("authenticate")]
+        //[HttpPost]
+        [Route("Authenticate")]
+        public ActionResult Authenticate([FromBody]String username, String password)
+        {
+            //var user = _userService.Authenticate(userParam.Username, userParam.Password);
+            var user = _userManager.GetUserById(1);
+
+            if (user == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            return Ok(user);
+        }
+
+
+
+        [HttpPost]
+        [Route("LogIn")]
+        public ActionResult<String> LogIn([FromBody]String username, String password)
+        {
+            //var _userLogic = new UserLogic();
+            //MyUserDto user = _userLogic.TryLogin(model);
+            User user = null;
+            if (user != null)
+            {
+                ClaimsIdentity identity;
+                identity = new ClaimsIdentity(new[] {
+                        //new Claim(ClaimTypes.Role, user.Role),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Name, user.Name+" "+user.LastName),
+                        new Claim(ClaimTypes.GivenName, user.Username)
+                    }, "ApplicationCookie");
+
+                //HttpContext.
+
+                //ControllerContext.HttpContext.GetOwinContext();
+                //System.Web.Http..HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var ctx = Request.GetTypedHeaders();
+                //var authManager = ctx.Authentication;
+                //authManager.SignIn(identity);
+                //if (model.ReturnUrl == null)
+                //{
+                //    model.ReturnUrl = "/Table/Table";
+                //}
+
+                //return Redirect(GetRedirectUrl(Url.RouteUrl.Url));
+                return ("Login");
+            }
+
+
+            // user authN failed
+            return ("Invalid username or password");
+            //return View();
+        }
     }
 }
