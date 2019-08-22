@@ -2,8 +2,8 @@ var loginForm = Vue.component('form-login',
     {
         data: function () {
             return {
-                UserName: '',
-                Password: '',
+                UserName: 'admin',
+                Password: 'admin',
                 isDisabled: false
             }
         },
@@ -26,10 +26,13 @@ var loginForm = Vue.component('form-login',
                 axios({
                     method: 'post',
                     url: '/User/LogIn',
-                    data: { "UserLogin": this.$data }
-
-                }).then(res => {
-                    alert('Successfully logged in');
+                    data: {
+                        UserName: this.$data.UserName,
+                        Password: this.$data.Password
+                    }
+                }).then(data => {
+                    //alert('Successfully logged in');
+                    console.log("_Logged in_: ", data.data);
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
                 }).catch(err => {
                     alert(`There was an error logging in. See details: ${err}`);
