@@ -24,21 +24,44 @@ namespace ProfilerDatabase
 
         public User Get(Int32 id)
         {
-            var user = _databaseContext.User.FirstOrDefault(x => x.Id == id);
-            return user;
+            try
+            {
+                var user = _databaseContext.User.FirstOrDefault(x => x.Id == id);
+                return user;
+            }
+            catch (Exception e)
+            {
+                //todo logging
+                throw;
+            }
         }
         public User Get(String username)
         {
-            var user = _databaseContext.User.FirstOrDefault(x => x.Username == username);
-            return user;
+            try
+            {
+                var user = _databaseContext.User.FirstOrDefault(x => x.Username == username);
+                return user;
+            }
+            catch (Exception)
+            {
+                //todo logging
+                throw;
+            }
         }
 
-        public User Authenticate(String username, String password)
+        public Boolean TryAuthenticate(String username, String password)
         {
-            var user = _databaseContext.User.FirstOrDefault(x => x.Username == username && x.Password == password);
-            return user;
+            try
+            {
+                var user = _databaseContext.User.FirstOrDefault(x => x.Username == username && x.Password == password);
+                if (user != null) return true; else return false;
+            }
+            catch (Exception e)
+            {
+                //todo logging
+                throw;
+            }
         }
-
 
         public IEnumerable<User> GetAll()
         {

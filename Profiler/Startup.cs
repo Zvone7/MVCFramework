@@ -37,7 +37,7 @@ namespace Profiler
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // DATABASE
-            services.AddDbContext<DatabaseContext>(x => x.UseSqlServer(Configuration["ConnectionString:HomePcDb"]));
+            services.AddDbContext<DatabaseContext>(x => x.UseSqlServer(Configuration["ConnectionString:LocalDb"]));
 
 
             // configure strongly typed settings objects

@@ -37,26 +37,24 @@ namespace Profiler.Controllers
             return returnUrl;
         }
 
-        public ActionResult<String> LogIn([FromBody]UserLogin userLogin)
+        public ActionResult<User> LogIn([FromBody]UserLogin userLogin)
         {
-            //var _userLogic = new UserLogic();
-            //MyUserDto user = _userLogic.TryLogin(model);
-            User user = null;
+            var user = _userManager.Authenticate(userLogin.UserName, userLogin.Password);
             if (user != null)
             {
-                ClaimsIdentity identity;
-                identity = new ClaimsIdentity(new[] {
-                        //new Claim(ClaimTypes.Role, user.Role),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim(ClaimTypes.Name, user.Name+" "+user.LastName),
-                        new Claim(ClaimTypes.GivenName, user.Username)
-                    }, "ApplicationCookie");
+                //ClaimsIdentity identity;
+                //identity = new ClaimsIdentity(new[] {
+                //        //new Claim(ClaimTypes.Role, user.Role),
+                //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                //        new Claim(ClaimTypes.Name, user.ToString()),
+                //        new Claim(ClaimTypes.GivenName, user.Username)
+                //    }, "ApplicationCookie");
 
-                //HttpContext.
+                ////HttpContext.
 
                 //ControllerContext.HttpContext.GetOwinContext();
                 //System.Web.Http..HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var ctx = Request.GetTypedHeaders();
+                //var ctx = Request.GetTypedHeaders();
                 //var authManager = ctx.Authentication;
                 //authManager.SignIn(identity);
                 //if (model.ReturnUrl == null)
@@ -65,12 +63,13 @@ namespace Profiler.Controllers
                 //}
 
                 //return Redirect(GetRedirectUrl(Url.RouteUrl.Url));
-                return ("Login");
+                //return ("Login");
+                return user;
             }
 
 
             // user authN failed
-            return ("Invalid username or password");
+            return null;
             //return View();
         }
     }

@@ -19,6 +19,11 @@ namespace ProfilerModels
         public string Role { get; set; }
         public string Token { get; set; }
 
+        public override string ToString()
+        {
+            return $"{Name} {LastName}";
+        }
+
         //public User(Int32 id, String username, String name, String lastName)
         //{
         //    Name = name;
