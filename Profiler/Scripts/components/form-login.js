@@ -1,4 +1,7 @@
-var loginForm = Vue.component('form-login',
+import { createCookie, deleteCookie } from '../utils';
+import { userCookieName } from '../const';
+
+export var formLogin = Vue.component('form-login',
     {
         data: function () {
             return {
@@ -31,9 +34,15 @@ var loginForm = Vue.component('form-login',
                         Password: this.$data.Password
                     }
                 }).then(data => {
-                    //alert('Successfully logged in');
                     console.log("_Logged in_: ", data.data);
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
+                    // create cookie
+                    if (data.data.username != undefined && data.data.username != "") {
+                        var userData = data.data;
+                        createCookie(userCookieName, JSON.stringify(userData), null, null,null)
+                        window.location.href = '/';
+                    }
+
                 }).catch(err => {
                     alert(`There was an error logging in. See details: ${err}`);
                 });

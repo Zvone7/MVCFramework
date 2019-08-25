@@ -1,11 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using ProfilerModels;
+﻿using ProfilerModels;
 using ProfilerModels.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace ProfilerLogic
 {
@@ -62,6 +58,7 @@ namespace ProfilerLogic
 
             // remove password before returning
             user.Password = null;
+            user.Salt = null;
 
             return user;
         }
