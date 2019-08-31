@@ -1,23 +1,18 @@
-import { userCookieName } from './const';
-import { readCookie } from './utils';
-import { formLogin } from './components/form-login'
+import { userCookieName } from './utils/constants';
+import { getUserCookieOrLogout } from './utils/utils-cookie';
+import { JSONtryParse } from './utils/utils-general';
+import { formLogin } from './components/form-login';
+import { displayUserData } from './components/display-user-data';
 
 Startup();
 
 function Startup() {
     console.log("Welcome!\nCompile time:", new Date().toUTCString());
-    var userCookie = readCookie(userCookieName);
-    //console.log(userCookie);
-    if ((userCookie === null || userCookie === undefined)) {
-        if (!window.location.toString().toLowerCase().includes("login".toLowerCase())) {
-            //console.log("redirecting to login...");
-            window.location.href = '/Login';
-        }
-    }
-    else {
-        console.log("Welcome", JSON.parse(userCookie).name);
+    var userCookie = getUserCookieOrLogout(userCookieName);
+    if (userCookie) {
+        console.log("Welcome", JSONtryParse(userCookie).name);
         if (window.location.toString().toLowerCase().includes("login".toLowerCase())) {
-            //console.log("redirecting home...");
+            console.log("redirecting home...");
             window.location.href = '/';
         }
     }
@@ -26,18 +21,16 @@ function Startup() {
 new Vue(
     {
         el: '#app',
-        components: { 'login-form': formLogin },
+        components: { 'form-login': formLogin, 'display-user-data': displayUserData },
         data: {
-            UserName: '',
-            Password: '',
-            isDisabled: false
+            UserName: 'admin',
+            Password: 'admin',
         },
-        computed: {
-            isLoginDisabled() { }
-        },
+        computed: {},
         methods: {
             SubmitLoginForm() { },
-            ResetForm() { }
+            ResetForm() { },
+            Logout() { }
         }
     }
 );

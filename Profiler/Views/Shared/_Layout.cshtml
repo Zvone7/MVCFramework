@@ -18,44 +18,53 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Profiler</a>
+    <div id="app">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Profiler</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a asp-area="" asp-controller="Home" asp-action="Home">Home</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    </ul>
+                </div>
+                <display-user-data class="text-info"></display-user-data>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Home">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                </ul>
-            </div>
+        </nav>
+
+
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; 2019 - Profiler</p>
+            </footer>
         </div>
-    </nav>
-
-    <partial name="_CookieConsentPartial" />
-
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2019 - Profiler</p>
-        </footer>
     </div>
+    <partial name="_CookieConsentPartial" />x
 
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+        @*<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+            <script src="https://unpkg.com/axios/dist/axios.min.js"></script>*@
+
+        <script src="~/lib/vue/vue.js"></script>
+        <script src="~/lib/polyfill/polyfill.min.js"></script>
+        <script src="~/lib/axios/axios.min.js"></script>
+
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
@@ -71,7 +80,14 @@
                 crossorigin="anonymous"
                 integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+
+        @*<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>*@
+
+        <script src="~/lib/vue/vue.min.js"></script>
+        <script src="~/lib/polyfill/polyfill.min.js"></script>
+        <script src="~/lib/axios/axios.min.js"></script>
+
+
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 

@@ -1,13 +1,12 @@
-import { createCookie, deleteCookie } from '../utils';
-import { userCookieName } from '../const';
+import { createCookie } from '../utils/utils-cookie';
+import { userCookieName } from '../utils/constants';
 
 export var formLogin = Vue.component('form-login',
     {
         data: function () {
             return {
-                UserName: 'admin',
-                Password: 'admin',
-                isDisabled: false
+                UserName: this.$parent.UserName,
+                Password: this.$parent.Password
             }
         },
         computed: {
@@ -39,7 +38,9 @@ export var formLogin = Vue.component('form-login',
                     // create cookie
                     if (data.data.username != undefined && data.data.username != "") {
                         var userData = data.data;
-                        createCookie(userCookieName, JSON.stringify(userData), null, null,null)
+                        createCookie(userCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
+                        //todo cookies not expiring/being deleted when expired..handle it.
+
                         window.location.href = '/';
                     }
 
@@ -48,6 +49,7 @@ export var formLogin = Vue.component('form-login',
                 });
             },
             ResetForm() {
+                console.log("ResetForm called");
                 this.UserName = '';
                 this.Password = '';
             }

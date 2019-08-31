@@ -22,6 +22,18 @@
 
   <ItemGroup>
     <None Include="wwwroot\js\Scripts\shared.js" />
+    <None Include="wwwroot\lib\axios\axios.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\lib\polyfill\polyfill.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\lib\vue\vue.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\lib\vue\vue.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
