@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProfilerModels.Infrastructure
 {
@@ -7,8 +8,8 @@ namespace ProfilerModels.Infrastructure
     {
         IEnumerable<TEntity> GetAll();
         TEntity Get(Int32 id);
-        void Add(TEntity entity);
-        void Update(TEntity dbEntity, TEntity entity);
-        void Delete(TEntity entity);
+        Task Add(TEntity entity);
+        Task Update(TEntity dbEntity, TEntity entity);
+        Task Delete(TEntity entity);
     }
 }

@@ -15,15 +15,63 @@ namespace ProfilerLogic
             _appSettings = appSettings;
         }
 
-        public User GetUserById(Int32 id)
+        public User Get(Int32 id)
         {
+            if (id <= 0)
+            {
+                //todo logging
+                throw new ArgumentNullException("Invalid ID !");
+            }
             var user = _userRepository.Get(id);
             return user;
+        }
+        public User Get(String email)
+        {
+            if (String.IsNullOrEmpty(email))
+            {
+                //todo logging
+                throw new ArgumentNullException("Email missing !");
+            }
+            var user = _userRepository.Get(email);
+            return user;
+        }
+
+        public Boolean Register(User user)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(user.Name) ||
+                       String.IsNullOrEmpty(user.LastName) ||
+                       String.IsNullOrEmpty(user.Password) ||
+                       String.IsNullOrEmpty(user.Email))
+                {
+                    //todo logging
+                    throw new ArgumentNullException("User field missing !");
+                }
+                var salt = BCrypt.Net.BCrypt.GenerateSalt();
+                var password = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
+                user.Salt = salt;
+                user.Password = password;
+                user.DateJoined = DateTime.UtcNow.Date;
+                user.Role = Role.User;
+
+                //todo - send confirmation mail
+                user.IsActive = true;
+
+                _userRepository.Add(user);
+                //todo logging
+                return true;
+            }
+            catch (Exception e)
+            {
+                //todo logging
+                return false;
+            }
         }
 
         public User Authenticate(string email, string password)
         {
-            var user = _userRepository.Get(email);
+            var user = Get(email);
 
             // return null if user not found
             if (user == null)
@@ -72,18 +120,6 @@ namespace ProfilerLogic
             //    x.Password = null;
             //    return x;
             //});
-        }
-
-        public User GetById(Int32 id)
-        {
-            var user = _userRepository.Get(id);
-
-            return user;
-            // return user without password
-            //if (user != null)
-            //    user.Password = null;
-
-            //return user;
         }
 
     }

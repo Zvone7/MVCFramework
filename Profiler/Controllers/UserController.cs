@@ -24,12 +24,17 @@ namespace Profiler.Controllers
 
         public ActionResult<User> GetUserById(Int32 id)
         {
-            return _userManager.GetUserById(id);
+            return _userManager.Get(id);
         }
 
         public ActionResult<Boolean> Register([FromBody]UserRegisterData userRegisterData)
         {
-            return true; ;
+            var user = new User();
+            user.Name = userRegisterData.Name;
+            user.LastName = userRegisterData.LastName;
+            user.Password = userRegisterData.Password;
+            user.Email = userRegisterData.Email;
+            return _userManager.Register(user);
         }
 
         private string GetRedirectUrl(string returnUrl)

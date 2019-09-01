@@ -3,6 +3,7 @@ using ProfilerModels.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ProfilerDatabase
 {
@@ -13,11 +14,20 @@ namespace ProfilerDatabase
         {
             _databaseContext = databaseContext;
         }
-        public void Add(User entity)
+        public async Task Add(User user)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _databaseContext.User.Add(user);
+                await _databaseContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                //todo logging
+                throw;
+            }
         }
-        public void Delete(User entity)
+        public async Task Delete(User entity)
         {
             throw new NotImplementedException();
         }
@@ -68,7 +78,7 @@ namespace ProfilerDatabase
             throw new NotImplementedException();
         }
 
-        public void Update(User dbEntity, User entity)
+        public async Task Update(User dbEntity, User entity)
         {
             throw new NotImplementedException();
         }

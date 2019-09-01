@@ -1,7 +1,10 @@
+^	upload data
 
-upload data
 
-notifications (login, spinner for loading, errors)
-logging
-register form
----cookies
+* writing to DB doesn't work - DB context fix?
+
+^	confirmation mail
+^	notifications (login, spinner for loading, errors)
+^	logging
+^	register form
+^	---cookies
