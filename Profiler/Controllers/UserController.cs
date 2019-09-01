@@ -27,6 +27,11 @@ namespace Profiler.Controllers
             return _userManager.GetUserById(id);
         }
 
+        public ActionResult<Boolean> Register([FromBody]UserRegisterData userRegisterData)
+        {
+            return true; ;
+        }
+
         private string GetRedirectUrl(string returnUrl)
         {
             if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
@@ -37,7 +42,7 @@ namespace Profiler.Controllers
             return returnUrl;
         }
 
-        public ActionResult<User> LogIn([FromBody]UserLogin userLogin)
+        public ActionResult<User> LogIn([FromBody]UserLoginData userLogin)
         {
             var user = _userManager.Authenticate(userLogin.Email, userLogin.Password);
             if (user != null)

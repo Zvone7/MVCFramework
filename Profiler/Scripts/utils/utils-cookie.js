@@ -48,7 +48,7 @@ export const getUserCookieOrLogout = function () {
     var cookie = getCookie(userCookieName);
     if (cookie === null || cookie === undefined || cookie.trim() === "") {
         deleteCookie(userCookieName);
-        if (window.location.href.toLowerCase().indexOf("login") === -1)
+        if (!window.location.href.toLowerCase().includes("login") && !window.location.href.toLowerCase().includes("register"))
             //console.log("redirecting to login..");
             window.location.href = '/login';
     }
