@@ -21,9 +21,9 @@ namespace ProfilerLogic
             return user;
         }
 
-        public User Authenticate(string username, string password)
+        public User Authenticate(string email, string password)
         {
-            var user = _userRepository.Get(username);
+            var user = _userRepository.Get(email);
 
             // return null if user not found
             if (user == null)
@@ -34,7 +34,7 @@ namespace ProfilerLogic
 
             var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
 
-            if (!_userRepository.TryAuthenticate(username, encryptedPassword))
+            if (!_userRepository.TryAuthenticate(email, encryptedPassword))
             {
                 //todo logging
                 return null;

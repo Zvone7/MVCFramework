@@ -35,11 +35,11 @@ namespace ProfilerDatabase
                 throw;
             }
         }
-        public User Get(String username)
+        public User Get(String email)
         {
             try
             {
-                var user = _databaseContext.User.FirstOrDefault(x => x.Username == username);
+                var user = _databaseContext.User.FirstOrDefault(x => x.Email == email);
                 return user;
             }
             catch (Exception)
@@ -49,11 +49,11 @@ namespace ProfilerDatabase
             }
         }
 
-        public Boolean TryAuthenticate(String username, String password)
+        public Boolean TryAuthenticate(String email, String password)
         {
             try
             {
-                var user = _databaseContext.User.FirstOrDefault(x => x.Username == username && x.Password == password);
+                var user = _databaseContext.User.FirstOrDefault(x => x.Email == email && x.Password == password);
                 if (user != null) return true; else return false;
             }
             catch (Exception e)

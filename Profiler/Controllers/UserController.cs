@@ -16,9 +16,9 @@ namespace Profiler.Controllers
             _userManager = userManager;
         }
 
-        public ActionResult<Int32> GetUserByUsername(String username)
+        public ActionResult<Int32> GetUserByMail(String email)
         {
-            if (username.Equals("admin")) { return 1; }
+            if (email.Equals("admin")) { return 1; }
             else { return -1; }
         }
 
@@ -39,7 +39,7 @@ namespace Profiler.Controllers
 
         public ActionResult<User> LogIn([FromBody]UserLogin userLogin)
         {
-            var user = _userManager.Authenticate(userLogin.UserName, userLogin.Password);
+            var user = _userManager.Authenticate(userLogin.Email, userLogin.Password);
             if (user != null)
             {
                 //ClaimsIdentity identity;
@@ -47,7 +47,7 @@ namespace Profiler.Controllers
                 //        //new Claim(ClaimTypes.Role, user.Role),
                 //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 //        new Claim(ClaimTypes.Name, user.ToString()),
-                //        new Claim(ClaimTypes.GivenName, user.Username)
+                //        new Claim(ClaimTypes.GivenName, user.Email)
                 //    }, "ApplicationCookie");
 
                 ////HttpContext.

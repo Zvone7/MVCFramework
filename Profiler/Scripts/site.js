@@ -23,8 +23,8 @@ new Vue(
         el: '#app',
         components: { 'form-login': formLogin, 'display-user-data': displayUserData },
         data: {
-            UserName: 'admin',
-            Password: 'admin',
+            //Email: 'admin',
+            //Password: 'admin',
         },
         computed: {},
         methods: {

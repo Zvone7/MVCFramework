@@ -11,7 +11,7 @@ namespace ProfilerModels
         public Int32 Id { get; set; }
         public String Name { get; set; }
         public String LastName { get; set; }
-        public String Username { get; set; }
+        public String Email { get; set; }
         public String Password { get; set; }
         public String Salt { get; set; }
         public Boolean IsActive { get; set; }
@@ -23,17 +23,5 @@ namespace ProfilerModels
         {
             return $"{Name} {LastName}";
         }
-
-        //public User(Int32 id, String username, String name, String lastName)
-        //{
-        //    Name = name;
-        //    LastName = lastName;
-        //    Username = username;
-        //}
-
-        //public override String ToString()
-        //{
-        //    return $"{Name ?? ""} {LastName ?? ""}";
-        //}
     }
 }

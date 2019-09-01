@@ -25,8 +25,8 @@ namespace ProfilerTests
             //    var salt = BCrypt.Net.BCrypt.GenerateSalt();
             //    var password = BCrypt.Net.BCrypt.HashPassword("admin", salt);
             //    var query = $"  INSERT INTO [dbo].[User] " +
-            //         $"(Name, LastName, UserName, Password, Salt, IsActive, DateJoined, Role, Token) " +
-            //         $"VALUES('Admin', 'A', 'admin', '{password}', '{salt}', 1, GETUTCDATE(), 'A', 'token'); ";
+            //         $"(Name, LastName, Email, Password, Salt, IsActive, DateJoined, Role, Token) " +
+            //         $"VALUES('Admin', 'A', 'admin@mail.com', '{password}', '{salt}', 1, GETUTCDATE(), 'A', 'token'); ";
             //}
         }
     }

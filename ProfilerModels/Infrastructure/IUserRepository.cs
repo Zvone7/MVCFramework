@@ -4,9 +4,9 @@ namespace ProfilerModels.Infrastructure
 {
     public interface IUserRepository : IDataRepository<User>
     {
-        Boolean TryAuthenticate(String username, String password);
+        Boolean TryAuthenticate(String email, String password);
 
-        User Get(String username);
+        User Get(String email);
 
     }
 }

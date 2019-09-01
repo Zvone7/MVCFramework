@@ -1,5 +1,7 @@
-logging
 
 upload data
+
+notifications (login, spinner for loading, errors)
+logging
 register form
 ---cookies

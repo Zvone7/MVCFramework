@@ -5,8 +5,8 @@ export var formLogin = Vue.component('form-login',
     {
         data: function () {
             return {
-                UserName: this.$parent.UserName,
-                Password: this.$parent.Password
+                Email: 'admin@mail.com',
+                Password: 'admin'
             }
         },
         computed: {
@@ -14,7 +14,7 @@ export var formLogin = Vue.component('form-login',
                 let isDisabled = true;
 
                 if (
-                    this.UserName !== '' &&
+                    this.Email !== '' &&
                     this.Password !== ''
                 ) {
                     isDisabled = false;
@@ -29,14 +29,14 @@ export var formLogin = Vue.component('form-login',
                     method: 'post',
                     url: '/User/LogIn',
                     data: {
-                        UserName: this.$data.UserName,
+                        Email: this.$data.Email,
                         Password: this.$data.Password
                     }
                 }).then(data => {
                     console.log("_Logged in_: ", data.data);
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
                     // create cookie
-                    if (data.data.username != undefined && data.data.username != "") {
+                    if (data.data.email != undefined && data.data.password != "") {
                         var userData = data.data;
                         createCookie(userCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
                         //todo cookies not expiring/being deleted when expired..handle it.
@@ -50,10 +50,10 @@ export var formLogin = Vue.component('form-login',
             },
             ResetForm() {
                 console.log("ResetForm called");
-                this.UserName = '';
+                this.Email = '';
                 this.Password = '';
             }
         },
-        template: '<div><label><b>Username</b></label><input type="text" placeholder="Enter UserName" v-model="UserName" required><label><b>Password</b></label><input type="password" placeholder="Enter Password" v-model="Password" required><button type="button" class="success" ref="LoginButton" v-bind:disabled="isLoginDisabled" v-on:click="SubmitLoginForm">Login</button></div>'
+        template: '<div><label><b>Email</b></label><input type="text" placeholder="Enter email" v-model="Email" required><label><b>Password</b></label><input type="password" placeholder="Enter Password" v-model="Password" required><button type="button" class="success" ref="LoginButton" v-bind:disabled="isLoginDisabled" v-on:click="SubmitLoginForm">Login</button></div>'
     }
 )
