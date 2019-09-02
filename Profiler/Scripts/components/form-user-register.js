@@ -4,12 +4,12 @@ export var formUserRegister = Vue.component('form-user-register',
     {
         data: function () {
             return {
-                Id:'0',
-                Name: '',
-                LastName: '',
-                Email: '',
-                Password: '',
-                PasswordAgain: ''
+                Id: '0',
+                Name: 'test',
+                LastName: 'test',
+                Email: 'test@test.test',
+                Password: 'test',
+                PasswordAgain: 'test'
             }
         },
         computed: {
@@ -59,6 +59,9 @@ export var formUserRegister = Vue.component('form-user-register',
                     alert(`There was an error registering. See details: ${err}`);
                 });
             },
+            ToLoginForm() {
+                window.location.href = '/login';
+            },
             ResetForm() {
                 console.log("ResetForm called");
                 this.Email = '';
@@ -67,6 +70,37 @@ export var formUserRegister = Vue.component('form-user-register',
                 this.Password = '';
             }
         },
-        template: '<div><label><b>Name</b></label><input type="text" placeholder="Enter name" v-model="Name" required><label><b>Last Name</b></label><input type="text" placeholder="Enter last name" v-model="LastName" required><label><b>Email</b></label><input type="text" placeholder="Enter email" v-model="Email" required><label><b>Password</b></label><input type="password" placeholder="Enter password" v-model="Password" required><label><b>Password again</b></label><input type="password" placeholder="Enter password again" v-model="PasswordAgain" required><button type="button" class="success" ref="RegisterButton" v-bind:disabled="isRegisterDisabled" v-on:click="SubmitRegisterForm">Register</button></div>'
+        template: `<div>
+                    <label><b>Name</b></label>
+                    <input type="text" placeholder="Enter name" v-model="Name" required>
+
+                    <label><b>Last Name</b></label>
+                    <input type="text" placeholder="Enter last name" v-model="LastName" required>
+
+                    <label><b>Email</b></label>
+                    <input type="text" placeholder="Enter email" v-model="Email" required>
+
+                    <label><b>Password</b></label>
+                    <input type="password" placeholder="Enter password" v-model="Password" required>
+
+                    <label><b>Password again</b></label>
+                    <input type="password" placeholder="Enter password again" v-model="PasswordAgain" required>
+
+                    <button 
+                        type="button" 
+                        class="success" 
+                        ref="RegisterButton" 
+                        v-bind:disabled="isRegisterDisabled" 
+                        v-on:click="SubmitRegisterForm">Register
+                    </button>
+
+                    <button 
+                        type="button" 
+                        class="info" 
+                        ref="LoginButton" 
+                        v-on:click="ToLoginForm">Back to login
+                    </button>
+
+                    </div>`
     }
 )

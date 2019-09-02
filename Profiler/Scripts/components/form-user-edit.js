@@ -72,6 +72,31 @@ export var formUserEdit = Vue.component('form-user-edit',
                 this.Password = '';
             }
         },
-        template: '<div><label><b>Name</b></label><input type="text" placeholder="Enter name" v-model="Name" required><label><b>Last Name</b></label><input type="text" placeholder="Enter last name" v-model="LastName" required><label><b>Email</b></label><input type="text" placeholder="Enter email" v-model="Email" required><label><b>Password</b></label><input type="password" placeholder="Enter password" v-model="Password" required><label><b>Password again</b></label><input type="password" placeholder="Enter password again" v-model="PasswordAgain" required><button type="button" class="success" ref="RegisterButton" v-bind:disabled="isRegisterDisabled" v-on:click="SubmitRegisterForm">Register</button></div>'
+        template: `<div>
+
+                    <label><b>Name</b></label>
+                    <input type="text" placeholder="Enter name" v-model="Name" required>
+
+                    <label><b>Last Name</b></label>
+                    <input type="text" placeholder="Enter last name" v-model="LastName" required>
+
+                    <label><b>Email</b></label>
+                    <input type="text" placeholder="Enter email" v-model="Email" required>
+
+                    <label><b>Password</b></label>
+                    <input type="password" placeholder="Enter password" v-model="Password" required>
+
+                    <label><b>Password again</b></label>
+                    <input type="password" placeholder="Enter password again" v-model="PasswordAgain" required>
+
+                    <button 
+                        type="button" 
+                        class="success" 
+                        ref="RegisterButton" 
+                        v-bind:disabled="isRegisterDisabled" 
+                        v-on:click="SubmitRegisterForm">Register
+                    </button>
+
+                    </div>`
     }
 )

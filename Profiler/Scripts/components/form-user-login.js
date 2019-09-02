@@ -48,7 +48,7 @@ export var formUserLogin = Vue.component('form-user-login',
                     alert(`There was an error logging in. See details: ${err}`);
                 });
             },
-            Register() {
+            ToRegisterForm() {
                 window.location.href = '/register';
             },
             ResetForm() {
@@ -57,6 +57,28 @@ export var formUserLogin = Vue.component('form-user-login',
                 this.Password = '';
             }
         },
-        template: '<div><label><b>Email</b></label><input type="text" placeholder="Enter email" v-model="Email" required><label><b>Password</b></label><input type="password" placeholder="Enter Password" v-model="Password" required><button type="button" class="success" ref="LoginButton" v-bind:disabled="isLoginDisabled" v-on:click="SubmitLoginForm">Login</button><button type="button" class="info" ref="RegisterButton" v-on:click="Register">Register</button></div>'
+        template: `<div>
+
+                    <label><b>Email</b></label>
+                    <input type="text" placeholder="Enter email" v-model="Email" required>
+
+                    <label><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" v-model="Password" required>
+
+                    <button 
+                        type="button" 
+                        class="success" 
+                        ref="LoginButton" 
+                        v-bind:disabled="isLoginDisabled" v-on:click="SubmitLoginForm">Login
+                    </button>
+
+                    <button 
+                        type="button" 
+                        class="info" 
+                        ref="RegisterButton" 
+                        v-on:click="ToRegisterForm">Register
+                    </button>
+
+                    </div>`
     }
 )

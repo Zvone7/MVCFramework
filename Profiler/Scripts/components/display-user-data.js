@@ -36,6 +36,21 @@ export var displayUserData = Vue.component('display-user-data',
                 window.location.href = '/';
             }
         },
-        template: '<div><label>{{Name}}</label><br/><label>{{LastName}}</label><button type="button" ref="LogoutButton" v-bind:disabled="isLogoutDisabled" v-on:click="Logout">Logout</button></div>'
+        template: `<div>
+
+                    <label>{{Name}}</label>
+
+                    <br/>
+
+                    <label>{{LastName}}</label>
+
+                    <button 
+                        type="button" 
+                        ref="LogoutButton" 
+                        v-bind:disabled="isLogoutDisabled" 
+                        v-on:click="Logout">Logout
+                    </button>
+
+                    </div>`
     }
 )
