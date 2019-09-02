@@ -54,6 +54,7 @@ namespace ProfilerLogic
                 user.Password = password;
                 user.DateJoined = DateTime.UtcNow.Date;
                 user.Role = Role.User;
+                user.Id = 0;
 
                 //todo - send confirmation mail
                 user.IsActive = true;

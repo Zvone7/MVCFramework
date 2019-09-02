@@ -1,7 +1,7 @@
 import { createCookie } from '../utils/utils-cookie';
 import { userCookieName } from '../utils/constants';
 
-export var formLogin = Vue.component('form-login',
+export var formUserLogin = Vue.component('form-user-login',
     {
         data: function () {
             return {
@@ -33,7 +33,7 @@ export var formLogin = Vue.component('form-login',
                         Password: this.$data.Password
                     }
                 }).then(data => {
-                    console.log("_Logged in_: ", data.data);
+                    console.log("__Logged in: ", data.data);
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
                     // create cookie
                     if (data.data.email != undefined && data.data.password != "") {

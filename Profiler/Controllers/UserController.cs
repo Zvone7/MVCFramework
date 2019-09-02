@@ -27,13 +27,8 @@ namespace Profiler.Controllers
             return _userManager.Get(id);
         }
 
-        public ActionResult<Boolean> Register([FromBody]UserRegisterData userRegisterData)
+        public ActionResult<Boolean> Register([FromBody]User user)
         {
-            var user = new User();
-            user.Name = userRegisterData.Name;
-            user.LastName = userRegisterData.LastName;
-            user.Password = userRegisterData.Password;
-            user.Email = userRegisterData.Email;
             return _userManager.Register(user);
         }
 

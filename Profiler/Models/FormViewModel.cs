@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ProfilerModels;
+using System;
 
 namespace Profiler.Models
 {
@@ -9,7 +7,7 @@ namespace Profiler.Models
     {
         public FormFields Fields { get; set; }
         public UserLoginData UserLoginData { get; set; }
-        public UserRegisterData UserRegisterData { get; set; }
+        public User User { get; set; }
     }
 
     public class FormFields
@@ -22,14 +20,6 @@ namespace Profiler.Models
     public class UserLoginData
     {
         public String Email { get; set; }
-        public String Password { get; set; }
-    }
-
-    public class UserRegisterData
-    {
-        public String Email { get; set; }
-        public String Name { get; set; }
-        public String LastName { get; set; }
         public String Password { get; set; }
     }
 }

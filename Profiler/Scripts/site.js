@@ -2,8 +2,8 @@ import { userCookieName } from './utils/constants';
 import { getUserCookieOrLogout } from './utils/utils-cookie';
 import { JSONtryParse } from './utils/utils-general';
 
-import { formLogin } from './components/form-login';
-import { formRegister } from './components/form-register';
+import { formUserLogin } from './components/form-user-login';
+import { formUserRegister } from './components/form-user-register';
 import { displayUserData } from './components/display-user-data';
 
 Startup();
@@ -24,7 +24,7 @@ function Startup() {
 new Vue(
     {
         el: '#app',
-        components: { 'form-login': formLogin, 'form-register': formRegister, 'display-user-data': displayUserData },
+        components: { 'form-user-login': formUserLogin, 'form-user-register': formUserRegister, 'display-user-data': displayUserData },
         data: {
             //Email: 'admin',
             //Password: 'admin',

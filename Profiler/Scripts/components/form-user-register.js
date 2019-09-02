@@ -1,9 +1,10 @@
 import { validateEmail } from '../../Scripts/utils/utils-general';
 
-export var formRegister = Vue.component('form-register',
+export var formUserRegister = Vue.component('form-user-register',
     {
         data: function () {
             return {
+                Id:'0',
                 Name: '',
                 LastName: '',
                 Email: '',
@@ -34,15 +35,16 @@ export var formRegister = Vue.component('form-register',
             SubmitRegisterForm() {
                 axios({
                     method: 'post',
-                    url: '/User/Register',
+                    url: '/User/AddOrUpdate',
                     data: {
+                        Id: this.$data.Id,
                         Email: this.$data.Email,
                         Name: this.$data.Name,
                         LastName: this.$data.LastName,
                         Password: this.$data.Password
                     }
                 }).then(data => {
-                    console.log("Registering_: ", data.data);
+                    console.log("__Registered: ", data.data);
                     this.$refs.RegisterButton.setAttribute("disabled", "disabled");
                     //// create cookie
                     //if (data.data.email != undefined && data.data.password != "") {
