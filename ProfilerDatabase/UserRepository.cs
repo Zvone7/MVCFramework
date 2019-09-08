@@ -1,4 +1,5 @@
-﻿using ProfilerModels;
+﻿using Microsoft.EntityFrameworkCore;
+using ProfilerModels;
 using ProfilerModels.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -9,17 +10,20 @@ namespace ProfilerDatabase
 {
     public class UserRepository : IUserRepository
     {
-        readonly DatabaseContext _databaseContext;
-        public UserRepository(DatabaseContext databaseContext)
+        readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
+        public UserRepository(DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder)
         {
-            _databaseContext = databaseContext;
+            _dbContextOptionsBuilder = dbContextOptionsBuilder;
         }
         public async Task Add(User user)
         {
             try
             {
-                _databaseContext.User.Add(user);
-                await _databaseContext.SaveChangesAsync();
+                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+                {
+                    context.User.Add(user);
+                    await context.SaveChangesAsync();
+                }
             }
             catch (Exception e)
             {
@@ -36,8 +40,11 @@ namespace ProfilerDatabase
         {
             try
             {
-                var user = _databaseContext.User.FirstOrDefault(x => x.Id == id);
-                return user;
+                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+                {
+                    var user = context.User.FirstOrDefault(x => x.Id == id);
+                    return user;
+                }
             }
             catch (Exception e)
             {
@@ -49,8 +56,11 @@ namespace ProfilerDatabase
         {
             try
             {
-                var user = _databaseContext.User.FirstOrDefault(x => x.Email == email);
-                return user;
+                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+                {
+                    var user = context.User.FirstOrDefault(x => x.Email.Equals(email));
+                    return user;
+                }
             }
             catch (Exception)
             {
@@ -63,8 +73,11 @@ namespace ProfilerDatabase
         {
             try
             {
-                var user = _databaseContext.User.FirstOrDefault(x => x.Email == email && x.Password == password);
-                if (user != null) return true; else return false;
+                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+                {
+                    var user = context.User.FirstOrDefault(x => x.Email.Equals(email) && x.Password.Equals(password));
+                    if (user != null) return true; else return false;
+                }
             }
             catch (Exception e)
             {
@@ -78,9 +91,21 @@ namespace ProfilerDatabase
             throw new NotImplementedException();
         }
 
-        public async Task Update(User dbEntity, User entity)
+        public async Task Update(User entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+                {
+                    context.Update(entity);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                //todo logging
+                throw;
+            }
         }
     }
 }

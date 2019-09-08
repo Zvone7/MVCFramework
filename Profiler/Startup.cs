@@ -11,6 +11,7 @@ using ProfilerDatabase;
 using ProfilerLogic;
 using ProfilerModels;
 using ProfilerModels.Infrastructure;
+using System.Security.Principal;
 using System.Text;
 
 namespace Profiler
@@ -36,39 +37,22 @@ namespace Profiler
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // DATABASE
-            services.AddDbContext<DatabaseContext>(x => x.UseSqlServer(Configuration["ConnectionString:LocalDb"]));
-
-
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
-            // configure jwt authentication
-            var appSettings = appSettingsSection.Get<AppSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
+
+            // DATABASE
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+            dbContextOptionsBuilder.UseSqlServer(Configuration["ConnectionString:LocalDb"]);
 
             // DI
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(x => new UserManager(x.GetService<AppSettings>(), x.GetService<IUserRepository>()));
+            services.AddScoped(x => dbContextOptionsBuilder);
 
 
         }

@@ -36,14 +36,14 @@ namespace ProfilerLogic
             return user;
         }
 
-        public Boolean Register(User user)
+        public Boolean AddOrUpdate(User user)
         {
             try
             {
                 if (String.IsNullOrEmpty(user.Name) ||
-                       String.IsNullOrEmpty(user.LastName) ||
-                       String.IsNullOrEmpty(user.Password) ||
-                       String.IsNullOrEmpty(user.Email))
+                    String.IsNullOrEmpty(user.LastName) ||
+                    String.IsNullOrEmpty(user.Password) ||
+                    String.IsNullOrEmpty(user.Email))
                 {
                     //todo logging
                     throw new ArgumentNullException("User field missing !");
@@ -54,13 +54,25 @@ namespace ProfilerLogic
                 user.Password = password;
                 user.DateJoined = DateTime.UtcNow.Date;
                 user.Role = Role.User;
-                user.Id = 0;
 
-                //todo - send confirmation mail
+
+                // new user (Register)
+                if (user.Id == 0)
+                {
+                    //todo - send confirmation mail
+                    //todo logging
+                    _userRepository.Add(user);
+
+                }
+                // edit user
+                else
+                {
+                    //todo logging
+                    _userRepository.Update(user);
+
+                }
                 user.IsActive = true;
 
-                _userRepository.Add(user);
-                //todo logging
                 return true;
             }
             catch (Exception e)

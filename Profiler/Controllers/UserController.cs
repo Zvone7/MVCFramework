@@ -4,32 +4,43 @@ using Profiler.Models;
 using ProfilerLogic;
 using ProfilerModels;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
+using System.Web;
+using System.Web.Http;
+using FromBodyAttribute = Microsoft.AspNetCore.Mvc.FromBodyAttribute;
 
 namespace Profiler.Controllers
 {
     public class UserController : Controller
     {
         private readonly UserManager _userManager;
-        public UserController(UserManager userManager)
+        private ClaimsPrincipal claimsPrincipal;
+        public UserController(UserManager userManager, IPrincipal principal)
         {
             _userManager = userManager;
+            claimsPrincipal = (ClaimsPrincipal)principal;
+
         }
 
-        public ActionResult<Int32> GetUserByMail(String email)
+        public ActionResult<User> GetUserByEmail([FromUri]String email)
         {
-            if (email.Equals("admin")) { return 1; }
-            else { return -1; }
+            var user = HttpContext.User;
+            var stuff = Thread.CurrentPrincipal;
+            return _userManager.Get(email);
         }
 
-        public ActionResult<User> GetUserById(Int32 id)
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Admin)]
+        public ActionResult<User> GetUserById([FromUri]Int32 id)
         {
             return _userManager.Get(id);
         }
 
-        public ActionResult<Boolean> Register([FromBody]User user)
+        public ActionResult<Boolean> AddOrUpdate([FromBody]User user)
         {
-            return _userManager.Register(user);
+            return _userManager.AddOrUpdate(user);
         }
 
         private string GetRedirectUrl(string returnUrl)
@@ -47,28 +58,26 @@ namespace Profiler.Controllers
             var user = _userManager.Authenticate(userLogin.Email, userLogin.Password);
             if (user != null)
             {
-                //ClaimsIdentity identity;
-                //identity = new ClaimsIdentity(new[] {
-                //        //new Claim(ClaimTypes.Role, user.Role),
-                //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                //        new Claim(ClaimTypes.Name, user.ToString()),
-                //        new Claim(ClaimTypes.GivenName, user.Email)
-                //    }, "ApplicationCookie");
+                var identity = new GenericIdentity(user.Email);
+                //claimsPrincipal.Identity = identity;
+                identity.AddClaim(new Claim("Role", Role.Admin));
 
-                ////HttpContext.
+                var threadPrincipal = new ClaimsPrincipal(identity);
 
-                //ControllerContext.HttpContext.GetOwinContext();
-                //System.Web.Http..HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                //var ctx = Request.GetTypedHeaders();
-                //var authManager = ctx.Authentication;
-                //authManager.SignIn(identity);
-                //if (model.ReturnUrl == null)
-                //{
-                //    model.ReturnUrl = "/Table/Table";
-                //}
 
-                //return Redirect(GetRedirectUrl(Url.RouteUrl.Url));
-                //return ("Login");
+                //var principal = Thread.CurrentPrincipal;
+
+                Thread.CurrentPrincipal = threadPrincipal;
+
+
+                //var currentContext = System.Web.HttpContext.Current;
+
+                HttpContext.User = threadPrincipal;
+
+
+                ApplicationUser user = 
+                    System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
                 return user;
             }
 

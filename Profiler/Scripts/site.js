@@ -5,6 +5,7 @@ import { JSONtryParse } from './utils/utils-general';
 import { formUserLogin } from './components/form-user-login';
 import { formUserRegister } from './components/form-user-register';
 import { displayUserData } from './components/display-user-data';
+import { formTest } from './components/form-test';
 
 Startup();
 
@@ -24,16 +25,14 @@ function Startup() {
 new Vue(
     {
         el: '#app',
-        components: { 'form-user-login': formUserLogin, 'form-user-register': formUserRegister, 'display-user-data': displayUserData },
-        data: {
-            //Email: 'admin',
-            //Password: 'admin',
+        components: {
+            'form-test': formTest,
+            'form-user-login': formUserLogin,
+            'form-user-register': formUserRegister,
+            'display-user-data': displayUserData
         },
+        data: {},
         computed: {},
-        methods: {
-            SubmitLoginForm() { },
-            ResetForm() { },
-            Logout() { }
-        }
+        methods: {}
     }
 );

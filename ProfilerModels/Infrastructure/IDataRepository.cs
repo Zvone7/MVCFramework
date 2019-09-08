@@ -9,7 +9,7 @@ namespace ProfilerModels.Infrastructure
         IEnumerable<TEntity> GetAll();
         TEntity Get(Int32 id);
         Task Add(TEntity entity);
-        Task Update(TEntity dbEntity, TEntity entity);
+        Task Update(TEntity entity);
         Task Delete(TEntity entity);
     }
 }
