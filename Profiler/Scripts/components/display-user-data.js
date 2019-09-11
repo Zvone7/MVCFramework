@@ -34,6 +34,25 @@ export var displayUserData = Vue.component('display-user-data',
                 this.$parent.Name = '';
                 this.$parent.LastName = '';
                 window.location.href = '/';
+
+                axios({
+                    method: 'get',
+                    url: '/User/LogOut'
+                }).then(data => {
+                    console.log("__Logged out: ", data.data);
+                    //this.$refs.LoginButton.setAttribute("disabled", "disabled");
+                    // create cookie
+                    //if (data.data.email != undefined && data.data.password != "") {
+                    //    var userData = data.data;
+                    //    createCookie(userCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
+                    //    //todo cookies not expiring/being deleted when expired..handle it.
+
+                    //    window.location.href = '/';
+                    //}
+                }).catch(err => {
+                    alert(`There was an error logging out. See details: ${err}`);
+                });
+
             }
         },
         template: `<div>

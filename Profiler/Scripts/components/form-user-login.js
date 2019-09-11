@@ -43,7 +43,6 @@ export var formUserLogin = Vue.component('form-user-login',
 
                         window.location.href = '/';
                     }
-
                 }).catch(err => {
                     alert(`There was an error logging in. See details: ${err}`);
                 });
