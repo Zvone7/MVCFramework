@@ -16,8 +16,8 @@ function Startup() {
         console.log("Welcome", JSONtryParse(userCookie).name);
         if (window.location.href.toLowerCase().includes("login") ||
             window.location.href.toLowerCase().includes("register")) {
-            console.log("redirecting home...");
-            window.location.href = '/';
+            //console.log("redirecting home...");
+            //window.location.href = '/';
         }
     }
 }

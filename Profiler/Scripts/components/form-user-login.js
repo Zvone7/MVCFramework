@@ -41,7 +41,7 @@ export var formUserLogin = Vue.component('form-user-login',
                         createCookie(userCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
                         //todo cookies not expiring/being deleted when expired..handle it.
 
-                        window.location.href = '/';
+                        //window.location.href = '/';
                     }
                 }).catch(err => {
                     alert(`There was an error logging in. See details: ${err}`);

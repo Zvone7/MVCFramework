@@ -34,7 +34,7 @@ export var formTest = Vue.component('form-test',
         template: `
                 <div>
 
-                    <label><b>CallGetUserById</b></label>
+                    <label><b>CallGetUserById(authorized (admin))</b></label>
                     <input type="text" placeholder="Enter value" v-model="Value1">
                     <button 
                         type="button" 
@@ -45,7 +45,7 @@ export var formTest = Vue.component('form-test',
 
                     <br/>
 
-                    <label><b>CallGetUserByEmail(unathorized)</b></label>
+                    <label><b>CallGetUserByEmail(authorized)</b></label>
                     <input type="text" placeholder="Enter value" v-model="Value2">
                     <button 
                         type="button" 

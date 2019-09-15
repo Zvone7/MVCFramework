@@ -40,8 +40,10 @@ namespace Profiler
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
-                options=>
+                options =>
                 {
+                    options.LoginPath = "/Login";
+                    options.AccessDeniedPath = "/Login";
                     //MinimumSameSitePolicy = SameSiteMode.Strict,
                 });
 
@@ -85,7 +87,7 @@ namespace Profiler
                 .AllowAnyHeader());
 
             app.UseAuthentication();
-            
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
