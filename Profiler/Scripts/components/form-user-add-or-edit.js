@@ -1,22 +1,27 @@
-import { validateEmail } from '../../Scripts/utils/utils-general';
+import { validateEmail, JSONtryParse } from '../../Scripts/utils/utils-general';
+import { getUserDataCookieOrLogout } from '../../Scripts/utils/utils-cookie';
 
-export var formUserRegister = Vue.component('form-user-register',
+export var formUserEdit = Vue.component('form-user-add-or-edit',
     {
         data: function () {
             return {
-                Id: '0',
-                Name: 'test',
-                LastName: 'test',
-                Email: 'test@test.test',
-                Password: 'test',
-                PasswordAgain: 'test'
+                Id: '',
+                Name: '',
+                LastName: '',
+                Email: '',
+                Password: '',
+                PasswordAgain: ''
             }
         },
         computed: {
-            isRegisterDisabled() {
+            isUpdateDisabled() {
                 let isDisabled = true;
-
+                var userCookie = getUserDataCookieOrLogout();
+                var userData = JSONtryParse(userCookie);
+                this.Id = userData.id;
                 if (
+                    this.Id !== undefined &&
+                    this.Id !== 0 &&
                     this.Email !== '' &&
                     validateEmail(this.Email) &&
                     this.Name !== '' &&
@@ -32,7 +37,7 @@ export var formUserRegister = Vue.component('form-user-register',
             }
         },
         methods: {
-            SubmitRegisterForm() {
+            SubmitEditForm() {
                 axios({
                     method: 'post',
                     url: '/User/AddOrUpdate',
@@ -44,15 +49,12 @@ export var formUserRegister = Vue.component('form-user-register',
                         Password: this.$data.Password
                     }
                 }).then(data => {
-                    console.log("__Registered: ", data.data);
+                    console.log("__Updated: ", data.data);
                     this.$refs.RegisterButton.setAttribute("disabled", "disabled");
 
                 }).catch(err => {
                     alert(`There was an error registering. See details: ${err}`);
                 });
-            },
-            ToLoginForm() {
-                window.location.href = '/login';
             },
             ResetForm() {
                 console.log("ResetForm called");
@@ -63,6 +65,7 @@ export var formUserRegister = Vue.component('form-user-register',
             }
         },
         template: `<div>
+
                     <label><b>Name</b></label>
                     <input type="text" placeholder="Enter name" v-model="Name" required>
 
@@ -84,13 +87,6 @@ export var formUserRegister = Vue.component('form-user-register',
                         ref="RegisterButton" 
                         v-bind:disabled="isRegisterDisabled" 
                         v-on:click="SubmitRegisterForm">Register
-                    </button>
-
-                    <button 
-                        type="button" 
-                        class="info" 
-                        ref="LoginButton" 
-                        v-on:click="ToLoginForm">Back to login
                     </button>
 
                     </div>`

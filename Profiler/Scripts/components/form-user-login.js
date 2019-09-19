@@ -1,5 +1,5 @@
 import { createCookie } from '../utils/utils-cookie';
-import { userCookieName } from '../utils/constants';
+import { userDataCookieName } from '../utils/constants';
 
 export var formUserLogin = Vue.component('form-user-login',
     {
@@ -38,10 +38,10 @@ export var formUserLogin = Vue.component('form-user-login',
                     // create cookie
                     if (data.data.email != undefined && data.data.password != "") {
                         var userData = data.data;
-                        createCookie(userCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
+                        createCookie(userDataCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
                         //todo cookies not expiring/being deleted when expired..handle it.
 
-                        //window.location.href = '/';
+                        window.location.href = '/';
                     }
                 }).catch(err => {
                     alert(`There was an error logging in. See details: ${err}`);

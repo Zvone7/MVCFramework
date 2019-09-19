@@ -44,6 +44,8 @@ namespace Profiler
                 {
                     options.LoginPath = "/Login";
                     options.AccessDeniedPath = "/Login";
+                    options.Cookie.Name = "UserLoginCookie";
+                    options.Cookie.HttpOnly = false;
                     //MinimumSameSitePolicy = SameSiteMode.Strict,
                 });
 

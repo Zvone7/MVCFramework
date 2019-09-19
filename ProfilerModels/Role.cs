@@ -1,8 +1,17 @@
-﻿namespace ProfilerModels
+﻿using System;
+
+namespace ProfilerModels
 {
     public static class Role
     {
-        public const string Admin = "Admin";
-        public const string User = "User";
+        public const String ADMIN = "admin";
+        public const String USER = "user";
+
+        public static class Access
+        {
+            public const String MUST_BE_AUTHENTICATED = ADMIN + "," + USER;
+            public const String MUST_BE_ADMIN = ADMIN;
+
+        }
     }
 }

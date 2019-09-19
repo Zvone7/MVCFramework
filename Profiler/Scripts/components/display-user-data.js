@@ -1,6 +1,6 @@
-﻿import { getUserCookieOrLogout, deleteCookie } from '../utils/utils-cookie';
+﻿import { getUserDataCookieOrLogout, deleteCookie } from '../utils/utils-cookie';
 import { JSONtryParse } from '../utils/utils-general'
-import { userCookieName } from '../utils/constants';
+import { userDataCookieName } from '../utils/constants';
 
 export var displayUserData = Vue.component('display-user-data',
     {
@@ -14,7 +14,7 @@ export var displayUserData = Vue.component('display-user-data',
         computed: {
             isLogoutDisabled() {
                 let isDisabled = true;
-                var userCookie = getUserCookieOrLogout(userCookieName);
+                var userCookie = getUserDataCookieOrLogout(userDataCookieName);
                 var userData = JSONtryParse(userCookie);
                 this.$data.Name = userData.name;
                 this.$data.LastName = userData.lastName;
@@ -30,9 +30,9 @@ export var displayUserData = Vue.component('display-user-data',
         },
         methods: {
             Logout() {
-                deleteCookie(userCookieName);
                 this.$parent.Name = '';
                 this.$parent.LastName = '';
+                deleteCookie(userDataCookieName);
                 window.location.href = '/';
 
                 axios({
@@ -40,15 +40,7 @@ export var displayUserData = Vue.component('display-user-data',
                     url: '/User/LogOut'
                 }).then(data => {
                     console.log("__Logged out: ", data.data);
-                    //this.$refs.LoginButton.setAttribute("disabled", "disabled");
-                    // create cookie
-                    //if (data.data.email != undefined && data.data.password != "") {
-                    //    var userData = data.data;
-                    //    createCookie(userCookieName, JSON.stringify(userData), new Date(new Date().getTime() + 10 * 60 * 1000), "/", null);
-                    //    //todo cookies not expiring/being deleted when expired..handle it.
-
-                    //    window.location.href = '/';
-                    //}
+                    this.$refs.LogoutButton.setAttribute("disabled", "disabled");
                 }).catch(err => {
                     alert(`There was an error logging out. See details: ${err}`);
                 });

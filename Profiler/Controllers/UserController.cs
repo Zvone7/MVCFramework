@@ -27,31 +27,32 @@ namespace Profiler.Controllers
 
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.User + "," + Role.Admin)]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public ActionResult<User> GetUserByEmail([FromUri]String email)
         {
-            var user = HttpContext.User;
-            var stuff = Thread.CurrentPrincipal;
             return _userManager.Get(email);
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Admin)]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_ADMIN)]
         public ActionResult<User> GetUserById([FromUri]Int32 id)
         {
+            var user = HttpContext.User;
             return _userManager.Get(id);
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.User + "," + Role.Admin)]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public ActionResult<Boolean> AddOrUpdate([FromBody]User user)
         {
             return _userManager.AddOrUpdate(user);
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task LogOut()
         {
             await HttpContext.SignOutAsync();
         }
 
+        [AllowAnonymous]
         public async Task<ActionResult<User>> LogIn([FromBody]UserLoginData userLogin)
         {
             var user = _userManager.Authenticate(userLogin.Email, userLogin.Password);

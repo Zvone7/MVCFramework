@@ -53,7 +53,7 @@ namespace ProfilerLogic
                 user.Salt = salt;
                 user.Password = password;
                 user.DateJoined = DateTime.UtcNow.Date;
-                user.Role = Role.User;
+                user.Role = Role.USER;
 
 
                 // new user (Register)

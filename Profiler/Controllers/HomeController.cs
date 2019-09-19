@@ -10,15 +10,16 @@ using ProfilerModels;
 
 namespace Profiler.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+    //[AllowAnonymous]
     public class HomeController : Controller
     {
-        //[Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Admin)]
-        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
