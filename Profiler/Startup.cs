@@ -63,7 +63,7 @@ namespace Profiler
 
             // DI
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped(x => new UserManager(x.GetService<AppSettings>(), x.GetService<IUserRepository>()));
+            services.AddScoped(x => new UserLogicManager(x.GetService<AppSettings>(), x.GetService<IUserRepository>()));
             services.AddScoped(x => dbContextOptionsBuilder);
 
 

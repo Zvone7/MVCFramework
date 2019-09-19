@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace ProfilerLogic
 {
-    public class UserManager
+    public class UserLogicManager
     {
         IUserRepository _userRepository;
         AppSettings _appSettings;
-        public UserManager(AppSettings appSettings, IUserRepository userRepository)
+        public UserLogicManager(AppSettings appSettings, IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _appSettings = appSettings;

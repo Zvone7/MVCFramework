@@ -27,7 +27,7 @@ export var formUserLogin = Vue.component('form-user-login',
             SubmitLoginForm() {
                 axios({
                     method: 'post',
-                    url: '/User/LogIn',
+                    url: '/Login/LogIn',
                     data: {
                         Email: this.$data.Email,
                         Password: this.$data.Password

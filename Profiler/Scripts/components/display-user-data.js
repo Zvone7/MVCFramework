@@ -37,7 +37,7 @@ export var displayUserData = Vue.component('display-user-data',
 
                 axios({
                     method: 'get',
-                    url: '/User/LogOut'
+                    url: '/Login/LogOut'
                 }).then(data => {
                     console.log("__Logged out: ", data.data);
                     this.$refs.LogoutButton.setAttribute("disabled", "disabled");

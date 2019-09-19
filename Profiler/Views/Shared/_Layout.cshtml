@@ -32,9 +32,9 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a asp-area="" asp-controller="Home" asp-action="Home">Home</a></li>
-                        <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+                        <li><a asp-area="" asp-controller="User" asp-action="Index">User</a></li>
                     </ul>
                 </div>
                 <display-user-data class="text-info"></display-user-data>
@@ -57,10 +57,12 @@
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 
+        @*---comment out for online libs---*@
         @*<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
             <script src="https://unpkg.com/axios/dist/axios.min.js"></script>*@
 
+        @*---comment out for offline libs---*@
         <script src="~/lib/vue/vue.js"></script>
         <script src="~/lib/polyfill/polyfill.min.js"></script>
         <script src="~/lib/axios/axios.min.js"></script>
@@ -81,8 +83,10 @@
                 integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
         </script>
 
+        @*---comment out for online libs---*@
         @*<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>*@
 
+        @*---comment out for offline libs---*@
         <script src="~/lib/vue/vue.min.js"></script>
         <script src="~/lib/polyfill/polyfill.min.js"></script>
         <script src="~/lib/axios/axios.min.js"></script>

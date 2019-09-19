@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Security.Claims;
 
 namespace ProfilerModels
 {
@@ -22,6 +24,29 @@ namespace ProfilerModels
         public override string ToString()
         {
             return $"{Name} {LastName}";
+        }
+
+        public User()
+        {
+
+        }
+
+        public User(ClaimsPrincipal user)
+        {
+            var claims = user.Claims.ToList();
+
+            if (!Int32.TryParse(claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id)).Value, out Int32 id))
+            {
+                //todo logging
+                throw new NullReferenceException("Missing id claim");
+            }
+            else Id = id;
+
+            Name = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name)).Value;
+            LastName = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.LastName)).Value;
+            Email = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email)).Value;
+            Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role)).Value;
+
         }
     }
 }
