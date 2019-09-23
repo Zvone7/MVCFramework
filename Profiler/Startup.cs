@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Profiler.Services;
 using ProfilerDatabase;
 using ProfilerLogic;
 using ProfilerModels;
@@ -62,6 +63,7 @@ namespace Profiler
             dbContextOptionsBuilder.UseSqlServer(Configuration["ConnectionString:LocalDb"]);
 
             // DI
+            services.AddScoped(x => new ControllerHelper());
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(x => new UserLogicManager(x.GetService<AppSettings>(), x.GetService<IUserRepository>()));
             services.AddScoped(x => dbContextOptionsBuilder);

@@ -30,7 +30,7 @@ namespace ProfilerLogic
             if (String.IsNullOrEmpty(email))
             {
                 //todo logging
-                throw new ArgumentNullException("Email missing !");
+                throw new ArgumentNullException("Email can't be null/empty !");
             }
             var user = _userRepository.Get(email);
             return user;

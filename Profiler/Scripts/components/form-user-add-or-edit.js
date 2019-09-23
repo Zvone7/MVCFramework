@@ -1,7 +1,7 @@
-import { validateEmail, JSONtryParse } from '../../Scripts/utils/utils-general';
-import { getUserDataCookieOrLogout } from '../../Scripts/utils/utils-cookie';
+import { validateEmail } from '../../Scripts/utils/utils-general';
+import { getUserData } from '../../Scripts/controls/controls-user';
 
-export var formUserEdit = Vue.component('form-user-add-or-edit',
+export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
     {
         data: function () {
             return {
@@ -13,12 +13,22 @@ export var formUserEdit = Vue.component('form-user-add-or-edit',
                 PasswordAgain: ''
             }
         },
-        computed: {
-            isUpdateDisabled() {
-                let isDisabled = true;
-                var userCookie = getUserDataCookieOrLogout();
-                var userData = JSONtryParse(userCookie);
+        created: async function () {
+            var userData;
+            var userData = await this.getUserData();
+            console.log("here:", userData);
+            if (userData.id > 0) {
                 this.Id = userData.id;
+                this.Name = userData.name;
+                this.LastName = userData.lastName;
+                this.Email = userData.email;
+                this.Password = '';
+                this.PasswordAgain = '';
+            }
+        },
+        computed: {
+            isSubmitDisabled() {
+                let isDisabled = true;
                 if (
                     this.Id !== undefined &&
                     this.Id !== 0 &&
@@ -32,12 +42,11 @@ export var formUserEdit = Vue.component('form-user-add-or-edit',
                 ) {
                     isDisabled = false;
                 }
-
                 return isDisabled;
             }
         },
         methods: {
-            SubmitEditForm() {
+            SubmitForm() {
                 axios({
                     method: 'post',
                     url: '/User/AddOrUpdate',
@@ -50,10 +59,10 @@ export var formUserEdit = Vue.component('form-user-add-or-edit',
                     }
                 }).then(data => {
                     console.log("__Updated: ", data.data);
-                    this.$refs.RegisterButton.setAttribute("disabled", "disabled");
+                    this.$refs.SubmitButton.setAttribute("disabled", "disabled");
 
                 }).catch(err => {
-                    alert(`There was an error registering. See details: ${err}`);
+                    alert(`There was an error submitting user. See details: ${err}`);
                 });
             },
             ResetForm() {
@@ -62,6 +71,17 @@ export var formUserEdit = Vue.component('form-user-add-or-edit',
                 this.Name = '';
                 this.LastName = '';
                 this.Password = '';
+            },
+            getUserData: async () => {
+                return axios({
+                    method: 'get',
+                    url: '/User/Me'
+                }).then(data => {
+                    return data.data;
+                }).catch(err => {
+                    alert(`There was an error fetching user data. See details: ${err}`);
+                });
+                return null;
             }
         },
         template: `<div>
@@ -85,8 +105,8 @@ export var formUserEdit = Vue.component('form-user-add-or-edit',
                         type="button" 
                         class="success" 
                         ref="RegisterButton" 
-                        v-bind:disabled="isRegisterDisabled" 
-                        v-on:click="SubmitRegisterForm">Register
+                        v-bind:disabled="isSubmitDisabled" 
+                        v-on:click="SubmitForm">Save changes
                     </button>
 
                     </div>`

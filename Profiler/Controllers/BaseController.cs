@@ -11,9 +11,9 @@ namespace Profiler.Controllers
     {
 
         protected readonly ControllerHelper _controllerHelper_;
-        public BaseController()
+        public BaseController(ControllerHelper controllerHelper)
         {
-            _controllerHelper_ = new ControllerHelper();
+            _controllerHelper_ = controllerHelper;
         }
     }
 }

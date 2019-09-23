@@ -18,7 +18,7 @@ namespace Profiler.Controllers
     public class LoginController : BaseController
     {
         private readonly UserLogicManager _userLogicManager_;
-        public LoginController(UserLogicManager userLogicManager)
+        public LoginController(UserLogicManager userLogicManager, ControllerHelper controllerHelper) : base(controllerHelper)
         {
             _userLogicManager_ = userLogicManager;
         }
