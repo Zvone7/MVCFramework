@@ -15,7 +15,7 @@ namespace ProfilerLogic
             _appSettings = appSettings;
         }
 
-        public User Get(Int32 id)
+        public EndUser Get(Int32 id)
         {
             if (id <= 0)
             {
@@ -25,7 +25,7 @@ namespace ProfilerLogic
             var user = _userRepository.Get(id);
             return user;
         }
-        public User Get(String email)
+        public EndUser Get(String email)
         {
             if (String.IsNullOrEmpty(email))
             {
@@ -36,7 +36,7 @@ namespace ProfilerLogic
             return user;
         }
 
-        public Boolean AddOrUpdate(User user)
+        public Boolean AddOrUpdate(EndUser user)
         {
             try
             {
@@ -46,19 +46,21 @@ namespace ProfilerLogic
                     String.IsNullOrEmpty(user.Email))
                 {
                     //todo logging
-                    throw new ArgumentNullException("User field missing !");
+                    throw new ArgumentNullException("Field on enduser missing !");
                 }
-                var salt = BCrypt.Net.BCrypt.GenerateSalt();
-                var password = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
-                user.Salt = salt;
-                user.Password = password;
-                user.DateJoined = DateTime.UtcNow.Date;
-                user.Role = Role.USER;
 
 
                 // new user (Register)
                 if (user.Id == 0)
                 {
+                    var salt = BCrypt.Net.BCrypt.GenerateSalt();
+                    var password = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
+                    user.Salt = salt;
+                    user.Password = password;
+                    user.DateJoined = DateTime.UtcNow.Date;
+                    user.Role = Role.USER;
+                    user.IsActive = true;
+
                     //todo - send confirmation mail
                     //todo logging
                     _userRepository.Add(user);
@@ -68,10 +70,30 @@ namespace ProfilerLogic
                 else
                 {
                     //todo logging
-                    _userRepository.Update(user);
+                    var dbUser = Get(user.Email);
+                    var encryptedPasswordForCheck = BCrypt.Net.BCrypt.HashPassword(user.Password, dbUser.Salt);
+
+                    user.Id = dbUser.Id;
+                    user.DateJoined = dbUser.DateJoined;
+                    user.Role = dbUser.Role;
+                    user.Salt = dbUser.Salt;
+                    user.Password = encryptedPasswordForCheck;
+                    if (String.IsNullOrWhiteSpace(user.Name)) user.Name = dbUser.Name;
+                    if (String.IsNullOrWhiteSpace(user.LastName)) user.LastName = dbUser.LastName;
+                    if (String.IsNullOrWhiteSpace(user.Email)) user.Email = dbUser.Email;
+
+                    if (encryptedPasswordForCheck.Equals(dbUser.Password))
+                    {
+                        _userRepository.Update(user);
+                    }
+                    else
+                    {
+                        //todo logging
+                        throw new Exception("Password not matching!");
+                        return false;
+                    }
 
                 }
-                user.IsActive = true;
 
                 return true;
             }
@@ -82,7 +104,7 @@ namespace ProfilerLogic
             }
         }
 
-        public User Authenticate(string email, string password)
+        public EndUser Authenticate(string email, string password)
         {
             var user = Get(email);
 
@@ -124,7 +146,7 @@ namespace ProfilerLogic
             return user;
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<EndUser> GetAll()
         {
             return _userRepository.GetAll();
             // return users without passwords

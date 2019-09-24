@@ -41,7 +41,7 @@ export var formUserLogin = Vue.component('form-user-login',
                 });
             },
             ToRegisterForm() {
-                window.location.href = '/register';
+                window.location.href = '/user/register';
             },
             ResetForm() {
                 console.log("ResetForm called");

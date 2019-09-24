@@ -7,7 +7,7 @@ namespace Profiler.Models
     {
         public FormFields Fields { get; set; }
         public UserLoginData UserLoginData { get; set; }
-        public User User { get; set; }
+        public EndUser User { get; set; }
     }
 
     public class FormFields

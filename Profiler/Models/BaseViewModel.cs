@@ -8,6 +8,6 @@ namespace Profiler.Models
 {
     public class BaseViewModel
     {
-        public User User { get; set; }
+        public EndUser User { get; set; }
     }
 }

@@ -47,18 +47,26 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
         },
         methods: {
             SubmitForm() {
+                console.log("Submitting", this.$data.Id);
+                console.log("Submitting", this.$data.Email);
+                console.log("Submitting", this.$data.Name);
+                console.log("Submitting", this.$data.LastName);
+                console.log("Submitting", this.$data.Password);
+                var EndUser = {
+                    Email: this.$data.Email,
+                    Name: this.$data.Name,
+                    LastName: this.$data.LastName,
+                    Password: this.$data.Password
+                }
+
+                console.log("Submitting", EndUser);
                 axios({
                     method: 'post',
                     url: '/User/AddOrUpdate',
-                    data: {
-                        Id: this.$data.Id,
-                        Email: this.$data.Email,
-                        Name: this.$data.Name,
-                        LastName: this.$data.LastName,
-                        Password: this.$data.Password
-                    }
+                    data: EndUser
+
                 }).then(data => {
-                    console.log("__Updated: ", data.data);
+                    console.log("__AddedOrUpdated: ", data.data);
                     this.$refs.SubmitButton.setAttribute("disabled", "disabled");
 
                 }).catch(err => {
@@ -106,7 +114,7 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
                         class="success" 
                         ref="RegisterButton" 
                         v-bind:disabled="isSubmitDisabled" 
-                        v-on:click="SubmitForm">Save changes
+                        v-on:click="SubmitForm">Submit
                     </button>
 
                     </div>`

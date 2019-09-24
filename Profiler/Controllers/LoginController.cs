@@ -24,7 +24,7 @@ namespace Profiler.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<ActionResult<User>> LogIn([FromBody]UserLoginData userLogin)
+        public async Task<ActionResult<EndUser>> LogIn([FromBody]UserLoginData userLogin)
         {
             var user = _userLogicManager_.Authenticate(userLogin.Email, userLogin.Password);
             if (user != null)
@@ -74,12 +74,6 @@ namespace Profiler.Controllers
         }
 
         public IActionResult Index()
-        {
-            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
-            return View(viewModelWithUser);
-        }
-
-        public IActionResult Register()
         {
             var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
             return View(viewModelWithUser);

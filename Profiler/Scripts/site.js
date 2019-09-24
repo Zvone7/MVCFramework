@@ -1,7 +1,6 @@
 import { requestLogOut } from './utils/utils-requests'
 
 import { formUserLogin } from './components/form-user-login';
-import { formUserRegister } from './components/form-user-register';
 import { formUserAddOrEdit } from './components/form-user-add-or-edit';
 import { formTest } from './components/form-test';
 
@@ -20,7 +19,6 @@ new Vue(
         el: '#app',
         components: {
             'form-test': formTest,
-            'form-user-login': formUserLogin,
             'form-user-register': formUserRegister,
             'form-user-add-or-edit': formUserAddOrEdit
         },

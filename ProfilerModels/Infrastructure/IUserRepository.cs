@@ -2,11 +2,11 @@
 
 namespace ProfilerModels.Infrastructure
 {
-    public interface IUserRepository : IDataRepository<User>
+    public interface IUserRepository : IDataRepository<EndUser>
     {
         Boolean TryAuthenticate(String email, String password);
 
-        User Get(String email);
+        EndUser Get(String email);
 
     }
 }

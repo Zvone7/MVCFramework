@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace ProfilerModels
 {
-    public class User
+    public class EndUser
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -26,12 +26,12 @@ namespace ProfilerModels
             return $"{Name} {LastName}";
         }
 
-        public User()
+        public EndUser()
         {
 
         }
 
-        public User(ClaimsPrincipal user)
+        public EndUser(ClaimsPrincipal user)
         {
             var claims = user.Claims.ToList();
 
@@ -47,6 +47,15 @@ namespace ProfilerModels
             Email = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email)).Value;
             Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role)).Value;
 
+        }
+
+        public EndUser(Int32 id, String name, String lastName, String email, String password)
+        {
+            Id = id;
+            Name = name;
+            LastName = lastName;
+            Email = email;
+            Password = password;
         }
     }
 }

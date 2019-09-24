@@ -7,6 +7,6 @@ namespace ProfilerDatabase
     {
         public DatabaseContext(DbContextOptions options) : base(options) { }
 
-        public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<EndUser> User { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace ProfilerDatabase
         {
             _dbContextOptionsBuilder = dbContextOptionsBuilder;
         }
-        public async Task Add(User user)
+        public async Task Add(EndUser user)
         {
             try
             {
@@ -31,12 +31,12 @@ namespace ProfilerDatabase
                 throw;
             }
         }
-        public async Task Delete(User entity)
+        public async Task Delete(EndUser entity)
         {
             throw new NotImplementedException();
         }
 
-        public User Get(Int32 id)
+        public EndUser Get(Int32 id)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace ProfilerDatabase
                 throw;
             }
         }
-        public User Get(String email)
+        public EndUser Get(String email)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace ProfilerDatabase
                     return user;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 //todo logging
                 throw;
@@ -86,12 +86,12 @@ namespace ProfilerDatabase
             }
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<EndUser> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public async Task Update(User entity)
+        public async Task Update(EndUser entity)
         {
             try
             {
