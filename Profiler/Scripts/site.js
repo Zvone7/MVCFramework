@@ -19,7 +19,7 @@ new Vue(
         el: '#app',
         components: {
             'form-test': formTest,
-            'form-user-register': formUserRegister,
+            'form-user-login': formUserLogin,
             'form-user-add-or-edit': formUserAddOrEdit
         },
         data: {},
