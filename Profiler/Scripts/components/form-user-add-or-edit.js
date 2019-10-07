@@ -13,9 +13,9 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
                 PasswordAgain: ''
             }
         },
-        created: async function () {
+        created: function () {
             var userData;
-            var userData = await this.getUserData();
+            var userData = this.getUserData();
             console.log("here:", userData);
             if (userData.id > 0) {
                 this.Id = userData.id;
@@ -80,15 +80,7 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
                 this.LastName = '';
                 this.Password = '';
             },
-            getUserData: async () => {
-                return axios({
-                    method: 'get',
-                    url: '/User/Me'
-                }).then(data => {
-                    return data.data;
-                }).catch(err => {
-                    alert(`There was an error fetching user data. See details: ${err}`);
-                });
+            getUserData() {
                 return null;
             }
         },

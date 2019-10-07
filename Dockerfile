@@ -1,19 +1,16 @@
-# base image
-FROM node:12.2.0-alpine
-
-# set working directory
+#buildnode=====================================
+FROM node:latest as buildnode
 WORKDIR /app/Profiler
-
 # add `/app/Profiler/node_modules/.bin` to $PATH
 ENV PATH /app/Profiler/node_modules/.bin:$PATH
-
 # install and cache app dependencies
 COPY Profiler/package.json /app/Profiler/package.json
 RUN npm install
-RUN npm install @vue/cli@3.7.0 -g
+#RUN npm install @vue/cli@3.7.0 -g
+COPY . .
 
-
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+#builddotnet=====================================
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS builddotnet
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -34,5 +31,5 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/Profiler/out ./
+COPY --from=builddotnet /app/Profiler/out ./
 ENTRYPOINT ["dotnet", "Profiler.dll"]
