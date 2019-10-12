@@ -1,9 +1,11 @@
+import axios from 'axios';
+
 export var formUserLogin = Vue.component('form-user-login',
     {
         data: function () {
             return {
-                Email: 'admin@mail.com',
-                Password: 'admin'
+                Email: '',
+                Password: ''
             }
         },
         computed: {
@@ -51,11 +53,12 @@ export var formUserLogin = Vue.component('form-user-login',
         },
         template: `<div>
 
+                    <form>
                     <label><b>Email</b></label>
-                    <input type="text" placeholder="Enter email" v-model="Email" required>
+                    <input type="text" placeholder="Enter email" v-model="Email" autocomplete="email" required>
 
                     <label><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" v-model="Password" required>
+                    <input type="password" placeholder="Enter Password" v-model="Password" autocomplete="current-password" required>
 
                     <button 
                         type="button" 
@@ -70,6 +73,7 @@ export var formUserLogin = Vue.component('form-user-login',
                         ref="RegisterButton" 
                         v-on:click="ToRegisterForm">Register
                     </button>
+                    </form>
 
                     </div>`
     }

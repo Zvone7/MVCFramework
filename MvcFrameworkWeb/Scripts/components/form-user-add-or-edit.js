@@ -1,5 +1,5 @@
 import { validateEmail } from '../../Scripts/utils/utils-general';
-import { getUserData } from '../../Scripts/controls/controls-user';
+import axios from 'axios';
 
 export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
     {
@@ -86,6 +86,8 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
         },
         template: `<div>
 
+                    <form>
+
                     <label><b>Name</b></label>
                     <input type="text" placeholder="Enter name" v-model="Name" required>
 
@@ -93,13 +95,13 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
                     <input type="text" placeholder="Enter last name" v-model="LastName" required>
 
                     <label><b>Email</b></label>
-                    <input type="text" placeholder="Enter email" v-model="Email" required>
+                    <input type="text" placeholder="Enter email" v-model="Email" autocomplete="email" required>
 
                     <label><b>Password</b></label>
-                    <input type="password" placeholder="Enter password" v-model="Password" required>
+                    <input type="password" placeholder="Enter password" v-model="Password" autocomplete="new-password" required>
 
                     <label><b>Password again</b></label>
-                    <input type="password" placeholder="Enter password again" v-model="PasswordAgain" required>
+                    <input type="password" placeholder="Enter password again" v-model="PasswordAgain" autocomplete="new-password" required>
 
                     <button 
                         type="button" 
@@ -108,6 +110,8 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
                         v-bind:disabled="isSubmitDisabled" 
                         v-on:click="SubmitForm">Submit
                     </button>
+
+                    </form>
 
                     </div>`
     }

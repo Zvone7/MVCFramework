@@ -16,8 +16,13 @@ namespace MvcFrameworkWeb.Controllers
     {
         public HomeController(ControllerHelper controllerHelper) : base(controllerHelper) { }
 
-        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public IActionResult Index()
+        {
+            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
+            return View(viewModelWithUser);
+        }
+
+        public IActionResult About()
         {
             var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
             return View(viewModelWithUser);

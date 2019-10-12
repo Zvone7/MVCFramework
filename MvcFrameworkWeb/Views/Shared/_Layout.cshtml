@@ -33,19 +33,20 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="User" asp-action="Index">User</a></li>
                 </ul>
             </div>
-            @*<display-user-data class="text-info"></display-user-data>*@
             <div>
-                @{ if (Model.User.Id > 0)
+                @{ if (Model != null)
                     {
-                        <div class="text-info">
-                            @Model.User.Name | @Model.User.LastName | @Model.User.Email
-                        </div>
-                        <button id="button-logout">Logout</button>
+                        if (Model.User != null && Model.User.Id > 0)
+                        {
+                            <div class="text-info">
+                                @Model.User.Name | @Model.User.LastName | @Model.User.Email
+                            </div>
+                            <button id="button-logout">Logout</button>
+                        }
                     }
                 }
             </div>
@@ -72,12 +73,10 @@
         @*---comment out for online libs---*@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         @*---comment out for offline libs---*@
         @*<script src="~/lib/vue/vue.js"></script>*@
         @*<script src="~/lib/polyfill/polyfill.min.js"></script>*@
-        @*<script src="~/lib/axios/axios.min.js"></script>*@
 
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
@@ -101,7 +100,6 @@
         @*---comment out for offline libs---*@
         @*<script src="~/lib/vue/vue.min.js"></script>*@
         @*<script src="~/lib/polyfill/polyfill.min.js"></script>*@
-        @*<script src="~/lib/axios/axios.min.js"></script>*@
 
 
         <script src="~/js/site.min.js" asp-append-version="true"></script>

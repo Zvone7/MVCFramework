@@ -2,6 +2,7 @@
 using MvcFrameworkCml.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MvcFrameworkBll
 {
@@ -123,39 +124,16 @@ namespace MvcFrameworkBll
                 return null;
             }
 
-            //// authentication successful so generate jwt token
-            //var tokenHandler = new JwtSecurityTokenHandler();
-            //var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            //var tokenDescriptor = new SecurityTokenDescriptor
-            //{
-            //    Subject = new ClaimsIdentity(new Claim[]
-            //    {
-            //        new Claim(ClaimTypes.Name, user.ToString()),
-            //        new Claim(ClaimTypes.Role, user.Role)
-            //    }),
-            //    Expires = DateTime.UtcNow.AddDays(7),
-            //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            //};
-            //var token = tokenHandler.CreateToken(tokenDescriptor);
-            //user.Token = tokenHandler.WriteToken(token);
-
             // remove password before returning
-            user.Password = null;
-            user.Salt = null;
 
-            return user;
+            return user.ReturnWithoutSensitiveData();
         }
 
         public IEnumerable<EndUser> GetAll()
         {
-            return _userRepository.GetAll();
+            var users = _userRepository.GetAll();
             // return users without passwords
-            //return _users.Select(x =>
-            //{
-            //    x.Password = null;
-            //    return x;
-            //});
+            return users.Select(u => u.ReturnWithoutSensitiveData());
         }
-
     }
 }

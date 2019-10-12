@@ -1,3 +1,4 @@
+import axios from 'axios';
 
 export var formTest = Vue.component('form-test',
     {

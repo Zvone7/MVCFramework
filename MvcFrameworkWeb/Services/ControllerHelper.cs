@@ -18,7 +18,7 @@ namespace MvcFrameworkWeb.Services
             if (isAuthenticated)
                 return new BaseViewModel() { User = new EndUser(httpContext.User) };
             else
-                return new BaseViewModel() { User = new EndUser() { Id = -1, Name = "Not logged in", LastName = "", Email = "", Role = "" } };
+                return new BaseViewModel() { User = null };
         }
     }
 }

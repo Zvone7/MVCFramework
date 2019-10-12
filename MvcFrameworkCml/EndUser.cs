@@ -57,5 +57,27 @@ namespace MvcFrameworkCml
             Email = email;
             Password = password;
         }
+
+        public EndUser(EndUser user)
+        {
+            Id = user.Id;
+            Name = user.Name;
+            LastName = user.LastName;
+            Email = user.Email;
+            Password = user.Password;
+            Salt = user.Salt;
+            IsActive = user.IsActive;
+            DateJoined = user.DateJoined;
+            Role = user.Role;
+            Token = user.Token;
+        }
+
+        public EndUser ReturnWithoutSensitiveData()
+        {
+            var userWithoutSensitiveData = new EndUser(this);
+            userWithoutSensitiveData.Password = null;
+            userWithoutSensitiveData.Salt = null;
+            return userWithoutSensitiveData;
+        }
     }
 }

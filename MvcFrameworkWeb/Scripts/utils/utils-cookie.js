@@ -46,29 +46,3 @@ export const createCookie = function (name, value, expires, path, domain) {
 
     document.cookie = cookie;
 }
-
-export const getUserDataCookieOrLogout = function () {
-    var aspNetCookie = getCookie(userLoginCookieName);
-    //console.log(userLoginCookieName,":", aspNetCookie);
-    if (aspNetCookie === null || aspNetCookie === undefined || aspNetCookie.trim() === "") {
-        console.log("Unable to get user login cookie.");
-        if (!window.location.href.toLowerCase().includes("login") &&
-            !window.location.href.toLowerCase().includes("register")) {
-            console.log("redirecting to login..");
-            window.location.href = '/login';
-        }
-    } else {
-        var cookie = getCookie(userDataCookieName);
-        if (cookie === null || cookie === undefined || cookie.trim() === "") {
-            deleteCookie(userDataCookieName);
-            if (!window.location.href.toLowerCase().includes("login") &&
-                !window.location.href.toLowerCase().includes("register")) {
-                console.log("redirecting to login..");
-                window.location.href = '/login';
-            }
-        }
-        else {
-            return cookie;
-        }
-    }
-}
