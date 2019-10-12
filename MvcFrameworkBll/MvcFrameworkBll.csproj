@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <!--<TargetFramework>netcoreapp2.1</TargetFramework>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MvcFrameworkDbl\MvcFrameworkDbl.csproj" />
+    <ProjectReference Include="..\MvcFrameworkCml\MvcFrameworkCml.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.IdentityModel.Tokens">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.identitymodel.tokens\5.2.0\lib\netstandard1.4\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel.Tokens.Jwt">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.identitymodel.tokens.jwt\5.2.0\lib\netstandard1.4\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
