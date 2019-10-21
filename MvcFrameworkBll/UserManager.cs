@@ -41,8 +41,7 @@ namespace MvcFrameworkBll
         {
             try
             {
-                if (String.IsNullOrEmpty(user.Name) ||
-                    String.IsNullOrEmpty(user.LastName) ||
+                if (String.IsNullOrEmpty(user.Username) ||
                     String.IsNullOrEmpty(user.Password) ||
                     String.IsNullOrEmpty(user.Email))
                 {
@@ -59,7 +58,7 @@ namespace MvcFrameworkBll
                     user.Salt = salt;
                     user.Password = password;
                     user.DateJoined = DateTime.UtcNow.Date;
-                    user.Role = Role.USER;
+                    user.Role = !String.IsNullOrWhiteSpace(user.Role) ? user.Role : Role.USER;
                     user.IsActive = true;
 
                     //todo - send confirmation mail

@@ -26,6 +26,7 @@ namespace MvcFrameworkWeb.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<EndUser>> LogIn([FromBody]UserLoginData userLogin)
         {
+            //CreateAdminUser();
             var user = _userLogicManager_.Authenticate(userLogin.Email, userLogin.Password);
             if (user != null)
             {
@@ -77,6 +78,21 @@ namespace MvcFrameworkWeb.Controllers
         {
             var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
             return View(viewModelWithUser);
+        }
+
+        private void CreateAdminUser()
+        {
+            _userLogicManager_.AddOrUpdate(
+                new EndUser()
+                {
+                    Email = "admin@mail.com",
+                    EmailConfirmed = true,
+                    Username = "admin",
+                    Name = "Mr.",
+                    LastName = "Admin",
+                    Password = "admin",
+                    Role = "admin"
+                });
         }
     }
 }

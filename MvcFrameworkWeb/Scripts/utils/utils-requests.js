@@ -1,4 +1,6 @@
-﻿export var requestLogOut = function () {
+﻿import axios from 'axios';
+
+export var requestLogOut = function () {
     axios({
         method: 'get',
         url: '/Login/LogOut'
