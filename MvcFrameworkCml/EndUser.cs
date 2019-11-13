@@ -13,7 +13,6 @@ namespace MvcFrameworkCml
         public Int32 Id { get; set; }
         public String Name { get; set; }
         public String LastName { get; set; }
-        public String Username { get; set; }
         public String Email { get; set; }
         public String Password { get; set; }
         public String Salt { get; set; }
@@ -72,7 +71,6 @@ namespace MvcFrameworkCml
             DateJoined = user.DateJoined;
             Role = user.Role;
             EmailConfirmed = user.EmailConfirmed;
-            Username = user.Username;
         }
 
         public EndUser ReturnWithoutSensitiveData()

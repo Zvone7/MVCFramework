@@ -41,9 +41,7 @@ namespace MvcFrameworkBll
         {
             try
             {
-                if (String.IsNullOrEmpty(user.Username) ||
-                    String.IsNullOrEmpty(user.Password) ||
-                    String.IsNullOrEmpty(user.Email))
+                if (String.IsNullOrEmpty(user.Password) || String.IsNullOrEmpty(user.Email))
                 {
                     //todo logging
                     throw new ArgumentNullException("Field on enduser missing !");

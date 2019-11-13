@@ -36,6 +36,7 @@ export var formUserLogin = Vue.component('form-user-login',
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
                     // create cookie
                     if (data.data.email != undefined && data.data.password != "") {
+                        this.$notify('Logged in succesfully.');
                         window.location.href = '/';
                     }
                 }).catch(err => {

@@ -12,11 +12,13 @@ export var formTest = Vue.component('form-test',
         },
         methods: {
             CallGetUserById() {
+                var context = this;
                 axios({
                     method: 'post',
                     url: '/User/GetUserById?id=' + this.$data.Value1
                 }).then(data => {
-                    console.log("__CallGetUserById: ", data.data);
+                    this.$notify('response:'+ data.data);
+
                 }).catch(err => {
                     alert(`There was an error registering. See details: ${err}`);
                 });
@@ -26,7 +28,8 @@ export var formTest = Vue.component('form-test',
                     method: 'post',
                     url: '/User/GetUserByEmail?email=' + this.$data.Value2
                 }).then(data => {
-                    console.log("__CallGetUserById: ", data.data);
+                    console.log(data.data);
+                    this.$notify('response: ' + data.data.id+'_'+data.data.name+'_'+data.data.lastName);
                 }).catch(err => {
                     alert(`There was an error registering. See details: ${err}`);
                 });
@@ -34,7 +37,6 @@ export var formTest = Vue.component('form-test',
         },
         template: `
                 <div>
-
                     <label><b>CallGetUserById(must be admin)</b></label>
                     <input type="text" placeholder="Enter value" v-model="Value1">
                     <button 

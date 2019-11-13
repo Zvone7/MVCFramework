@@ -1,10 +1,10 @@
 ﻿console.log("loaded shared.js");
 
 $("#loginButton").click(function () {
-    var username = getFieldValue("username");
+    var email = getFieldValue("email");
     var password = getFieldValue("password");
-    if (username != "" && password != "") {
-        authenticate(username, password);
+    if (email != "" && password != "") {
+        authenticate(email, password);
     }
     else {
         console.log("Input valid values.");
@@ -30,11 +30,11 @@ function getFieldValue(fieldId) {
     else return value;
 }
 
-function getUserByUsername(username) {
-    var serviceURL = '/api/User/GetUserByUsername';
+function getUserByEmail(email) {
+    var serviceURL = '/api/User/GetUserByEmail';
     $.ajax({
         type: "GET",
-        url: serviceURL + "?username=" + username,
+        url: serviceURL + "?email=" + email,
         //data: null,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -60,13 +60,13 @@ function getUserByUsername(username) {
 }
 
 
-function authenticate(username, password) {
-    var userdata = { Username: username, Password: password }
+function authenticate(email, password) {
+    var userdata = { Email: email, Password: password }
     //var serviceURL = '/api/User/Authenticate';
     var serviceURL = '/api/User/LogIn';
     $.ajax({
         type: "POST",
-        url: serviceURL,// + "?username=" + username + "&password=" + password,
+        url: serviceURL,// + "?email=" + email + "&password=" + password,
         data: JSON.stringify(userdata),
         contentType: "application/json; charset=utf-8",
         dataType: "json",

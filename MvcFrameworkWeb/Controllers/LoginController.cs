@@ -85,7 +85,6 @@ namespace MvcFrameworkWeb.Controllers
                 {
                     Email = "admin@mail.com",
                     EmailConfirmed = true,
-                    Username = "admin",
                     Name = "Mr.",
                     LastName = "Admin",
                     Password = "admin",

@@ -3,18 +3,18 @@ import { requestLogOut } from './utils/utils-requests'
 import { formUserLogin } from './components/form-user-login';
 import { formUserAddOrEdit } from './components/form-user-add-or-edit';
 import { formTest } from './components/form-test';
-import axios from 'axios';
+import Notification from 'vue-notification';
 
 Startup();
 
 function Startup() {
-    console.log("Welcome!\nCompile time:", new Date().toUTCString());
 }
 
 $(document).on("click", "#button-logout", function () {
     requestLogOut();
 })
 
+Vue.use(Notification);
 new Vue(
     {
         el: '#app',
