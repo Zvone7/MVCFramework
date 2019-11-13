@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MvcFrameworkWeb.Models;
-using MvcFrameworkWeb.Services;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
+using MvcFrameworkWeb.Models;
+using MvcFrameworkWeb.Services;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MvcFrameworkWeb.Controllers
 {
-    public class LoginController : BaseController
+    public class LoginController : CustomBaseController
     {
         private readonly UserLogicManager _userLogicManager_;
         public LoginController(UserLogicManager userLogicManager, ControllerHelper controllerHelper) : base(controllerHelper)
@@ -68,7 +66,7 @@ namespace MvcFrameworkWeb.Controllers
             //return View();
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task LogOut()
         {
             await HttpContext.SignOutAsync();

@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MvcFrameworkCml;
 using MvcFrameworkWeb.Models;
 using MvcFrameworkWeb.Services;
-using MvcFrameworkCml;
+using System.Diagnostics;
 
 namespace MvcFrameworkWeb.Controllers
 {
     [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-    public class HomeController : BaseController
+    public class HomeController : CustomBaseController
     {
         public HomeController(ControllerHelper controllerHelper) : base(controllerHelper) { }
 

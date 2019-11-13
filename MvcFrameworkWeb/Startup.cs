@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MvcFrameworkWeb.Services;
-using MvcFrameworkDbl;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkDbl;
+using MvcFrameworkWeb.Services;
 using System.Security.Principal;
-
 namespace MvcFrameworkWeb
 {
     public class Startup
@@ -34,7 +33,9 @@ namespace MvcFrameworkWeb
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
                 options =>
@@ -49,10 +50,6 @@ namespace MvcFrameworkWeb
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
-
 
             // DATABASE
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
@@ -77,7 +74,7 @@ namespace MvcFrameworkWeb
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                //app.UseHsts();
             }
 
             // global cors policy
@@ -85,18 +82,16 @@ namespace MvcFrameworkWeb
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-            
+
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseAuthorization();
-            app.UseAuthentication();
-            app.UseRouting();
-            app.UseEndpoints(routes =>
+            app.UseMvc(routes =>
             {
-                routes.MapControllerRoute(
+                routes.MapRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

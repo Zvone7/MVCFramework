@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MvcFrameworkWeb.Services;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
+using MvcFrameworkWeb.Services;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -11,7 +11,7 @@ using FromBodyAttribute = Microsoft.AspNetCore.Mvc.FromBodyAttribute;
 
 namespace MvcFrameworkWeb.Controllers
 {
-    public class UserController : BaseController
+    public class UserController : CustomBaseController
     {
         private readonly UserLogicManager _userLogicManager_;
         public UserController(UserLogicManager userLogicManager, ControllerHelper controllerHelper) : base(controllerHelper)

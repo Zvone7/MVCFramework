@@ -36,7 +36,9 @@ namespace MvcFrameworkCml
         {
             var claims = user.Claims.ToList();
 
-            if (!Int32.TryParse(claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id)).Value, out Int32 id))
+            var idClaim = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id));
+
+            if (idClaim == null || !Int32.TryParse(idClaim.Value, out Int32 id))
             {
                 //todo logging
                 throw new NullReferenceException("Missing id claim");
@@ -47,7 +49,6 @@ namespace MvcFrameworkCml
             LastName = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.LastName)).Value;
             Email = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email)).Value;
             Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role)).Value;
-
         }
 
         public EndUser(Int32 id, String name, String lastName, String email, String password)

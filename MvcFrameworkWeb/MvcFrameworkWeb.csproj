@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <!--<TargetFramework>netcoreapp2.1</TargetFramework>-->
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,10 +16,12 @@
     <PackageReference Include="jQuery" Version="3.4.1" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNet.Identity.Owin" Version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="3.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="4.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
@@ -47,12 +48,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MvcFrameworkBll\MvcFrameworkBll.csproj" />
     <ProjectReference Include="..\MvcFrameworkCml\MvcFrameworkCml.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.EntityFrameworkCore">
-      <HintPath>..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore\2.1.1\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
