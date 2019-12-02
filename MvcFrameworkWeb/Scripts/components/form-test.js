@@ -8,8 +8,7 @@ export var formTest = Vue.component('form-test',
                 Value2: 'admin@mail.com'
             }
         },
-        computed: {
-        },
+        computed: {},
         methods: {
             CallGetUserById() {
                 var context = this;
@@ -17,7 +16,7 @@ export var formTest = Vue.component('form-test',
                     method: 'post',
                     url: '/User/GetUserById?id=' + this.$data.Value1
                 }).then(data => {
-                    this.$notify('response:'+ data.data);
+                    this.$notify('response:' + data.data);
 
                 }).catch(err => {
                     alert(`There was an error registering. See details: ${err}`);
@@ -29,9 +28,56 @@ export var formTest = Vue.component('form-test',
                     url: '/User/GetUserByEmail?email=' + this.$data.Value2
                 }).then(data => {
                     console.log(data.data);
-                    this.$notify('response: ' + data.data.id+'_'+data.data.name+'_'+data.data.lastName);
+                    this.$notify('response: ' + data.data.id + '_' + data.data.name + '_' + data.data.lastName);
                 }).catch(err => {
                     alert(`There was an error registering. See details: ${err}`);
+                });
+            },
+            CallAuthorizedEndpoint() {
+                console.log("AuthorizedEndpoint");
+
+
+                axios({
+                    method: 'Get',
+                    url: '/Test/AuthorizedEndpoint',
+                    data: "test"
+
+                }).then(data => {
+                    console.log("tested: ", data.data);
+
+                }).catch(err => {
+                    console.log(`There was an error. See details: ${err}`);
+                });
+            },
+            CallUnuthorizedEndpoint() {
+                console.log("UnuthorizedEndpoint");
+
+
+                axios({
+                    method: 'Get',
+                    url: '/Test/UnuthorizedEndpoint',
+                    data: "test123"
+
+                }).then(data => {
+                    console.log("tested: ", data.data);
+
+                }).catch(err => {
+                    console.log(`There was an error. See details: ${err}`);
+                });
+            }
+            , CallSetAdminRole() {
+                console.log("SetAdminRole");
+
+
+                axios({
+                    method: 'Get',
+                    url: '/Test/SetAdminRole'
+
+                }).then(data => {
+                    console.log("tested: ", data.data);
+
+                }).catch(err => {
+                    console.log(`There was an error. See details: ${err}`);
                 });
             }
         },
@@ -55,6 +101,33 @@ export var formTest = Vue.component('form-test',
                         class="success" 
                         ref="Button2" 
                         v-on:click="CallGetUserByEmail">CallGetUserByEmail
+                    </button>
+
+                    <br/>
+
+                    <button 
+                        type="button" 
+                        class="success" 
+                        ref="ButtonUnathorizedEndpoint" 
+                        v-on:click="CallUnuthorizedEndpoint">UnuthorizedEndpoint
+                    </button>
+
+                    <br/>
+
+                    <button 
+                        type="button" 
+                        class="success" 
+                        ref="ButtonSetAdminRole" 
+                        v-on:click="CallSetAdminRole">SetAdminRole
+                    </button>
+
+                    <br/>
+
+                    <button 
+                        type="button" 
+                        class="success" 
+                        ref="ButtonAuthorizedEndpoint" 
+                        v-on:click="CallAuthorizedEndpoint">AuthorizedEndpoint
                     </button>
 
                 </div>`

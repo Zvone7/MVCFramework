@@ -1,61 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script>
-    function AuthorizedEndpoint() {
-        console.log("AuthorizedEndpoint");
 
 
-        axios({
-            method: 'Get',
-            url: '/Test/AuthorizedEndpoint',
-            data: "test"
-
-        }).then(data => {
-            console.log("tested: ", data.data);
-
-        }).catch(err => {
-            console.log(`There was an error. See details: ${err}`);
-        });
-    }
-
-    function UnuthorizedEndpoint() {
-        console.log("UnuthorizedEndpoint");
-
-
-        axios({
-            method: 'Get',
-            url: '/Test/UnuthorizedEndpoint',
-            data: "test123"
-
-        }).then(data => {
-            console.log("tested: ", data.data);
-
-        }).catch(err => {
-            console.log(`There was an error. See details: ${err}`);
-        });
-    }
-
-    function SetAdminRole() {
-        console.log("SetAdminRole");
-
-
-        axios({
-            method: 'Get',
-            url: '/Test/SetAdminRole'
-
-        }).then(data => {
-            console.log("tested: ", data.data);
-
-        }).catch(err => {
-            console.log(`There was an error. See details: ${err}`);
-        });
-    }
-</script>
-
-<div class="text-center">
-    <button onclick="UnuthorizedEndpoint();">UnuthorizedEndpoint</button>
-    <button onclick="SetAdminRole();">SetAdminRole</button>
-    <button onclick="AuthorizedEndpoint();">AuthorizedEndpoint</button>
-</div>
+<form-test></form-test>

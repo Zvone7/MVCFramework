@@ -1,7 +1,7 @@
 ﻿using MvcFrameworkCml;
 using System;
 
-namespace MvcFrameworkWeb.Models
+namespace MvcFrameworkCml.ViewModels
 {
     public class FormViewModel
     {

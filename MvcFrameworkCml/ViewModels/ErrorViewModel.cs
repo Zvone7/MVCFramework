@@ -1,6 +1,6 @@
 using System;
 
-namespace MvcFrameworkWeb.Models
+namespace MvcFrameworkCml.ViewModels
 {
     public class ErrorViewModel : BaseViewModel
     {

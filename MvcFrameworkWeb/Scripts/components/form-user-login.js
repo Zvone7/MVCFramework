@@ -32,15 +32,31 @@ export var formUserLogin = Vue.component('form-user-login',
                         Password: this.$data.Password
                     }
                 }).then(data => {
-                    console.log("__Logged in: ", data.data);
+                    console.log("__Login called: ", data);
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
-                    // create cookie
-                    if (data.data.email != undefined && data.data.password != "") {
-                        this.$notify('Logged in succesfully.');
-                        window.location.href = '/';
+                    var response = data.data.toString();
+                    if (response != undefined && response.email!== "") {
+                        this.$notify({
+                            type: 'success',
+                            text: 'Logged in succesfully. Redirecting...'
+                        });
+                        setTimeout(function () {
+                            window.location.href = '/';
+                        }, 1000);
+                    }
+                    else {
+                        this.$notify({
+                            type: 'error',
+                            text: 'Invalid login data combination.'
+                        });
+
                     }
                 }).catch(err => {
-                    alert(`There was an error logging in. See details: ${err}`);
+                    this.$notify({
+                        type: 'error',
+                        text: 'There was an error logging in.'
+                    });
+                    console.log(`There was an error logging in. See details: ${err}`);
                 });
             },
             ToRegisterForm() {

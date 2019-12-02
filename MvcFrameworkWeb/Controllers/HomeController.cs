@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcFrameworkCml;
-using MvcFrameworkWeb.Models;
+using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System.Diagnostics;
 
@@ -14,26 +14,23 @@ namespace MvcFrameworkWeb.Controllers
 
         public IActionResult Index()
         {
-            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
-            return View(viewModelWithUser);
+            return GetViewModelOrRedirect(HttpContext);
         }
 
         public IActionResult About()
         {
-            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
-            return View(viewModelWithUser);
+            return GetViewModelOrRedirect(HttpContext);
         }
 
         [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
             return View(new ErrorViewModel
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
-                User = viewModelWithUser.User
-            });
+                User = HttpContext.User.Identity.IsAuthenticated ? new EndUser(HttpContext.User) : null
+            }) ;
         }
     }
 }

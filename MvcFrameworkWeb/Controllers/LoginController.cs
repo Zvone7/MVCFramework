@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
-using MvcFrameworkWeb.Models;
+using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MvcFrameworkCml.ViewModels;
 
 namespace MvcFrameworkWeb.Controllers
 {
@@ -55,15 +56,9 @@ namespace MvcFrameworkWeb.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
-
-
-                return user;
             }
 
-
-            // user authN failed
-            return null;
-            //return View();
+            return user;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
@@ -74,13 +69,13 @@ namespace MvcFrameworkWeb.Controllers
 
         public IActionResult Index()
         {
-            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
-            return View(viewModelWithUser);
+            var res = GetViewModelOrRedirect(HttpContext);
+            return View();
         }
 
         private void CreateAdminUser()
         {
-            _userLogicManager_.AddOrUpdate(
+            _userLogicManager_.Add(
                 new EndUser()
                 {
                     Email = "admin@mail.com",

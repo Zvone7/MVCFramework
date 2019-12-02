@@ -1,7 +1,7 @@
-import { validateEmail } from '../../Scripts/utils/utils-general';
+import { validateEmail } from '../utils/utils-general';
 import axios from 'axios';
 
-export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
+export var formUserAdd = Vue.component('form-user-add',
     {
         data: function () {
             return {
@@ -16,7 +16,6 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
         created: function () {
             var userData;
             var userData = this.getUserData();
-            console.log("here:", userData);
             if (userData.id > 0) {
                 this.Id = userData.id;
                 this.Name = userData.name;
@@ -47,11 +46,6 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
         },
         methods: {
             SubmitForm() {
-                console.log("Submitting", this.$data.Id);
-                console.log("Submitting", this.$data.Email);
-                console.log("Submitting", this.$data.Name);
-                console.log("Submitting", this.$data.LastName);
-                console.log("Submitting", this.$data.Password);
                 var EndUser = {
                     Email: this.$data.Email,
                     Name: this.$data.Name,
@@ -59,14 +53,13 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
                     Password: this.$data.Password
                 }
 
-                console.log("Submitting", EndUser);
                 axios({
                     method: 'post',
-                    url: '/User/AddOrUpdate',
+                    url: '/User/Add',
                     data: EndUser
 
                 }).then(data => {
-                    console.log("__AddedOrUpdated: ", data.data);
+                    console.log("__User_Add: ", data.data);
                     this.$refs.SubmitButton.setAttribute("disabled", "disabled");
 
                 }).catch(err => {
@@ -88,28 +81,28 @@ export var formUserAddOrEdit = Vue.component('form-user-add-or-edit',
 
                     <form>
 
-                    <label><b>Name</b></label>
-                    <input type="text" placeholder="Enter name" v-model="Name" required>
+                        <label><b>Name</b></label>
+                        <input type="text" placeholder="Enter name" v-model="Name" required>
 
-                    <label><b>Last Name</b></label>
-                    <input type="text" placeholder="Enter last name" v-model="LastName" required>
+                        <label><b>Last Name</b></label>
+                        <input type="text" placeholder="Enter last name" v-model="LastName" required>
 
-                    <label><b>Email</b></label>
-                    <input type="text" placeholder="Enter email" v-model="Email" autocomplete="email" required>
+                        <label><b>Email</b></label>
+                        <input type="text" placeholder="Enter email" v-model="Email" autocomplete="email" required>
 
-                    <label><b>Password</b></label>
-                    <input type="password" placeholder="Enter password" v-model="Password" autocomplete="new-password" required>
+                        <label><b>Password</b></label>
+                        <input type="password" placeholder="Enter password" v-model="Password" autocomplete="new-password" required>
 
-                    <label><b>Password again</b></label>
-                    <input type="password" placeholder="Enter password again" v-model="PasswordAgain" autocomplete="new-password" required>
+                        <label><b>Password again</b></label>
+                        <input type="password" placeholder="Enter password again" v-model="PasswordAgain" autocomplete="new-password" required>
 
-                    <button 
-                        type="button" 
-                        class="success" 
-                        ref="RegisterButton" 
-                        v-bind:disabled="isSubmitDisabled" 
-                        v-on:click="SubmitForm">Submit
-                    </button>
+                        <button 
+                            type="button" 
+                            class="success" 
+                            ref="RegisterButton" 
+                            v-bind:disabled="isSubmitDisabled" 
+                            v-on:click="SubmitForm">Submit
+                        </button>
 
                     </form>
 

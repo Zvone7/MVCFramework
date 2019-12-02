@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MvcFrameworkWeb.Models;
 using MvcFrameworkCml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MvcFrameworkCml.ViewModels;
 
 namespace MvcFrameworkWeb.Services
 {

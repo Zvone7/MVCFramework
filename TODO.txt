@@ -1,5 +1,7 @@
-^	upload data
-
-^	confirmation mail
-^	notifications (login, spinner for loading, errors)
-^	logging
+async DB calls
+unify requests (receive and send)
+remove sensitive data on return calls
+notifications (login, spinner for loading, errors)
+password complexity
+logging
+confirmation mail

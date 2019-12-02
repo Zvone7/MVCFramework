@@ -58,7 +58,8 @@ namespace MvcFrameworkWeb
             // DI
             services.AddScoped(x => new ControllerHelper());
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped(x => new UserLogicManager(x.GetService<AppSettings>(), x.GetService<IUserRepository>()));
+            //services.AddScoped<IAppSettings, AppSettings>();
+            services.AddScoped(x => new UserLogicManager(x.GetService<IUserRepository>()));
             services.AddScoped(x => dbContextOptionsBuilder);
 
 

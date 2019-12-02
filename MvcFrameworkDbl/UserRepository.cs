@@ -52,6 +52,7 @@ namespace MvcFrameworkDbl
                 throw;
             }
         }
+
         public EndUser Get(String email)
         {
             try

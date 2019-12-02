@@ -82,7 +82,7 @@ namespace MvcFrameworkWeb.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            return GetViewModelOrRedirect(HttpContext);
         }
 
     }

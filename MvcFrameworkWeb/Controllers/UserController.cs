@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
+using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System;
 using System.Linq;
@@ -19,51 +20,79 @@ namespace MvcFrameworkWeb.Controllers
             _userLogicManager_ = userLogicManager;
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public ActionResult<EndUser> GetUserByEmail([FromUri]String email)
         {
             return _userLogicManager_.Get(email);
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_ADMIN)]
+        [Authorize(Roles = Role.Access.MUST_BE_ADMIN)]
         public ActionResult<EndUser> GetUserById([FromUri]Int32 id)
         {
             var user = HttpContext.User;
             return _userLogicManager_.Get(id);
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public ActionResult<EndUser> Me()
         {
-            var user = HttpContext.User;
-            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
+            var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
             return _userLogicManager_.Get(email);
         }
 
         [AllowAnonymous]
-        public ActionResult<Boolean> AddOrUpdate([FromBody]EndUser user)
+        public ActionResult<Boolean> Add([FromBody]EndUser user)
         {
             var loggedInUserEmail = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
             if (String.IsNullOrWhiteSpace(loggedInUserEmail))
                 user.Id = 0;
             else
                 user.Id = 1;
-            return _userLogicManager_.AddOrUpdate(user);
+            return _userLogicManager_.Add(user);
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public ActionResult<Boolean> ChangeName([FromBody]RequestData<String> name)
+        {
+            var user = HttpContext.User;
+            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
+            return _userLogicManager_.ChangeName(email, name.Data);
+        }
+
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public ActionResult<Boolean> ChangeLastName([FromBody]RequestData<String> lastName)
+        {
+            var user = HttpContext.User;
+            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
+            return _userLogicManager_.ChangeLastName(email, lastName.Data);
+        }
+
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public ActionResult<Boolean> ChangeEmail([FromBody]RequestData<String> email)
+        {
+            var user = HttpContext.User;
+            var activeEmail = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
+            return _userLogicManager_.ChangeLastName(activeEmail, email.Data);
+        }
+
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public ActionResult<Boolean> ChangePassword([FromBody]RequestData<String> password)
+        {
+            var user = HttpContext.User;
+            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
+            return _userLogicManager_.ChangePassword(email, password.Data);
+        }
+
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public IActionResult Index()
         {
-            var model = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
-
-            return View(model);
+            return GetViewModelOrRedirect(HttpContext);
         }
 
         [AllowAnonymous]
         public IActionResult Register()
         {
-            var viewModelWithUser = _controllerHelper_.ReturnViewModelWithUser(HttpContext);
-            return View(viewModelWithUser);
+            return GetViewModelOrRedirect(HttpContext);
         }
     }
 }
