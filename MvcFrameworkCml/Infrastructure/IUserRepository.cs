@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace MvcFrameworkCml.Infrastructure
 {
     public interface IUserRepository : IDataRepository<EndUser>
     {
-        Boolean TryAuthenticate(String email, String password);
+        Task<Boolean> TryAuthenticateAsync(String email, String password);
 
-        EndUser Get(String email);
-
+        Task<EndUser> GetAsync(String email);
     }
 }

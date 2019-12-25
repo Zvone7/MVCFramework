@@ -30,7 +30,7 @@ namespace MvcFrameworkWeb.Controllers
         public async Task<ActionResult<EndUser>> LogIn([FromBody]UserLoginData userLogin)
         {
             //CreateAdminUser();
-            var user = _userLogicManager_.Authenticate(userLogin.Email, userLogin.Password);
+            var user = await _userLogicManager_.Authenticate(userLogin.Email, userLogin.Password);
             if (user != null)
             {
 
@@ -79,7 +79,7 @@ namespace MvcFrameworkWeb.Controllers
 
         private void CreateAdminUser()
         {
-            _userLogicManager_.Add(
+            _userLogicManager_.AddAsync(
                 new EndUser()
                 {
                     Email = "admin@mail.com",

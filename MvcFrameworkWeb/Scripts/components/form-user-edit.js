@@ -70,15 +70,15 @@ export var formUserEdit = Vue.component('form-user-edit',
                 this.$refs.SubmitNameButton.setAttribute("disabled", "disabled");
             },
             SubmitLastName() {
-                SubmitValue(this,"Name", this.$data.LastName);
+                SubmitValue(this, "LastName", this.$data.LastName);
                 this.$refs.SubmitLastNameButton.setAttribute("disabled", "disabled");
             },
             SubmitEmail() {
-                SubmitValue(this,"Name", this.$data.Email);
+                SubmitValue(this, "Email", this.$data.Email);
                 this.$refs.SubmitEmailButton.setAttribute("disabled", "disabled");
             },
             SubmitPassword() {
-                SubmitValue(this,"Password", this.$data.Password);
+                SubmitValue(this, "Password", this.$data.Password);
                 this.$refs.SubmitPasswordButton.setAttribute("disabled", "disabled");
             },
             async getUserDataTest() {

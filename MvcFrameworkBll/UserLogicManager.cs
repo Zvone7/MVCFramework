@@ -1,59 +1,84 @@
-﻿using MvcFrameworkCml;
+﻿using Microsoft.Extensions.Logging;
+using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MvcFrameworkBll
 {
-    public class UserLogicManager
+    public class UserLogicManager : CustomBaseLogicManager
     {
-        IUserRepository _userRepository;
-        public UserLogicManager(IUserRepository userRepository)
+        private readonly IUserRepository _userRepository_;
+
+        public UserLogicManager(IUserRepository userRepository, ILogger logger) : base(logger)
         {
-            _userRepository = userRepository;
+            _userRepository_ = userRepository;
         }
 
-        public EndUser Get(Int32 id)
+        public async Task<EndUser> GetAsync(Int32 id)
         {
-            if (id <= 0)
+            try
             {
-                //todo logging
-                throw new ArgumentNullException("Invalid ID !");
+                if (id <= 0)
+                {
+                    _logger_.LogError($"Unable to Get user with id {id}");
+                    return null;
+                }
+                var user = await _userRepository_.GetAsync(id);
+                return user;
             }
-            var user = _userRepository.Get(id);
-            return user;
-        }
-
-        public EndUser Get(String email)
-        {
-            if (String.IsNullOrEmpty(email))
+            catch (Exception e)
             {
-                //todo logging
-                throw new ArgumentNullException("Email can't be null/empty !");
+                _logger_.LogError($"Unable to Get user with id {id}|\n {e.Message} |\n {e.StackTrace}");
+                return null;
             }
-            var user = _userRepository.Get(email);
-            return user;
         }
 
-        public IEnumerable<EndUser> GetAll()
+        public async Task<EndUser> GetAsync(String email)
         {
-            var users = _userRepository.GetAll();
-            // return users without passwords
-            return users.Select(u => u.ReturnWithoutSensitiveData());
+            try
+            {
+                if (String.IsNullOrEmpty(email))
+                {
+                    _logger_.LogError($"Unable to Get user - email null/empty.");
+                    return null;
+                }
+                var user = await _userRepository_.GetAsync(email);
+                return user;
+            }
+            catch (Exception e)
+            {
+                _logger_.LogError($"Unable to Get user with username {email}|\n {e.Message} |\n {e.StackTrace}");
+                return null;
+            }
         }
 
-        public Boolean Add(EndUser user)
+        public async Task<IEnumerable<EndUser>> GetAllAsync()
+        {
+            try
+            {
+                var users = await _userRepository_.GetAllAsync();
+                // return users without passwords
+                return users.Select(u => u.ReturnWithoutSensitiveData());
+            }
+            catch (Exception e)
+            {
+                _logger_.LogError($"Unable to GetAll users |\n {e.Message} |\n {e.StackTrace}");
+                return null;
+            }
+        }
+
+        public async Task<Boolean> AddAsync(EndUser user)
         {
             try
             {
                 if (String.IsNullOrEmpty(user.Password) || String.IsNullOrEmpty(user.Email))
                 {
-                    //todo logging
-                    throw new ArgumentNullException("Field on enduser missing !");
+                    _logger_.LogError($"Unable to Authenticate user - user/password are null/empty.");
+                    return false;
                 }
-
-
                 var salt = BCrypt.Net.BCrypt.GenerateSalt();
                 var password = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
                 user.Salt = salt;
@@ -63,138 +88,126 @@ namespace MvcFrameworkBll
                 user.IsActive = true;
 
                 //todo - send confirmation mail
-                //todo logging
-                _userRepository.Add(user);
-
+                await _userRepository_.AddAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                //todo logging
+                _logger_.LogError($"Unable to Add user |\n {e.Message} |\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public Boolean ChangeName(String activeEmail, String name)
+        public async Task<Boolean> ChangeName(String activeEmail, String name)
         {
             try
             {
                 if (String.IsNullOrEmpty(name))
                 {
-                    //todo logging
-                    throw new ArgumentNullException("Name cannot be null/empty!");
+                    _logger_.LogError($"Unable to Change name of user - name null/empty for user {activeEmail}");
+                    return false;
                 }
-
-
-                var user = Get(activeEmail);
+                var user = await GetAsync(activeEmail);
                 user.Name = name;
-
-                _userRepository.Update(user);
+                await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                //todo logging
+                _logger_.LogError($"Unable to Change name of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public Boolean ChangeLastName(String activeEmail, String lastName)
+        public async Task<Boolean> ChangeLastName(String activeEmail, String lastName)
         {
             try
             {
                 if (String.IsNullOrEmpty(lastName))
                 {
-                    //todo logging
-                    throw new ArgumentNullException("LastName cannot be null/empty!");
+                    _logger_.LogError($"Unable to Change lastname of user - lastname null/empty for user {activeEmail}");
+                    return false;
                 }
-
-
-                var user = Get(activeEmail);
+                var user = await GetAsync(activeEmail);
                 user.LastName = lastName;
-
-                _userRepository.Update(user);
+                await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                //todo logging
+                _logger_.LogError($"Unable to Change lastname of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public Boolean ChangeEmail(String activeEmail, String email)
+        public async Task<Boolean> ChangeEmail(String activeEmail, String email)
         {
             try
             {
                 if (String.IsNullOrEmpty(email))
                 {
-                    //todo logging
-                    throw new ArgumentNullException("Email cannot be null/empty!");
+                    _logger_.LogError($"Unable to Change email of user - email null/empty for user {activeEmail}");
+                    return false;
                 }
-
-
-                var user = Get(activeEmail);
+                var user = await GetAsync(activeEmail);
                 user.Email = email;
-
-                _userRepository.Update(user);
+                await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                //todo logging
+                _logger_.LogError($"Unable to Change email of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public Boolean ChangePassword(String activeEmail, String password)
+        public async Task<Boolean> ChangePassword(String activeEmail, String password)
         {
             try
             {
                 if (String.IsNullOrEmpty(password))
                 {
-                    //todo logging
-                    throw new ArgumentNullException("Password cannot be null/empty!");
+                    _logger_.LogError($"Unable to Change password of user - password null/empty for user {activeEmail}");
+                    return false;
                 }
-
-
-                var user = Get(activeEmail);
+                var user = await GetAsync(activeEmail);
                 var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
                 user.Password = encryptedPassword;
-
-                _userRepository.Update(user);
+                await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                //todo logging
+                _logger_.LogError($"Unable to Change password of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public EndUser Authenticate(string email, string password)
+        public async Task<EndUser> Authenticate(String email, String password)
         {
-            var user = Get(email);
-
-            // return null if user not found
-            if (user == null)
+            try
             {
-                //todo logging
+                var user = await GetAsync(email);
+
+                if (user == null)
+                {
+                    _logger_.LogError($"User with email {email} not found");
+                    return null;
+                }
+                var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
+                if (!(await _userRepository_.TryAuthenticateAsync(email, encryptedPassword)))
+                {
+                    _logger_.LogError($"User with email {email} not authenticated");
+                    return null;
+                }
+                // remove password before returning
+                return user.ReturnWithoutSensitiveData();
+            }
+            catch (Exception e)
+            {
+                _logger_.LogError($"Unable to authenticate user with email {email}|\n {e.Message} |\n {e.StackTrace}");
                 return null;
             }
-
-            var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
-
-            if (!_userRepository.TryAuthenticate(email, encryptedPassword))
-            {
-                //todo logging
-                return null;
-            }
-
-            // remove password before returning
-
-            return user.ReturnWithoutSensitiveData();
         }
-
     }
 }

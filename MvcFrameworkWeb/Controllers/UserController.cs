@@ -8,6 +8,7 @@ using MvcFrameworkWeb.Services;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Web.Http;
 using FromBodyAttribute = Microsoft.AspNetCore.Mvc.FromBodyAttribute;
 
@@ -26,66 +27,66 @@ namespace MvcFrameworkWeb.Controllers
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public ActionResult<EndUser> GetUserByEmail([FromUri]String email)
+        public async Task<ActionResult<EndUser>> GetUserByEmail([FromUri]String email)
         {
-            return _userLogicManager_.Get(email);
+            return await _userLogicManager_.GetAsync(email);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_ADMIN)]
-        public ActionResult<EndUser> GetUserById([FromUri]Int32 id)
+        public async Task<ActionResult<EndUser>> GetUserById([FromUri]Int32 id)
         {
             var user = HttpContext.User;
-            return _userLogicManager_.Get(id);
+            return await _userLogicManager_.GetAsync(id);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public ActionResult<EndUser> Me()
+        public async Task<ActionResult<EndUser>> Me()
         {
             var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return _userLogicManager_.Get(email);
+            return await _userLogicManager_.GetAsync(email);
         }
 
         [AllowAnonymous]
-        public ActionResult<Boolean> Add([FromBody]EndUser user)
+        public async Task<ActionResult<Boolean>> Add([FromBody]EndUser user)
         {
             var loggedInUserEmail = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
             if (String.IsNullOrWhiteSpace(loggedInUserEmail))
                 user.Id = 0;
             else
                 user.Id = 1;
-            return _userLogicManager_.Add(user);
+            return await _userLogicManager_.AddAsync(user);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public ActionResult<Boolean> ChangeName([FromBody]RequestData<String> name)
+        public async Task<ActionResult<Boolean>> ChangeName([FromBody]RequestData<String> name)
         {
             var user = HttpContext.User;
             var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return _userLogicManager_.ChangeName(email, name.Data);
+            return await _userLogicManager_.ChangeName(email, name.Data);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public ActionResult<Boolean> ChangeLastName([FromBody]RequestData<String> lastName)
+        public async Task<ActionResult<Boolean>> ChangeLastName([FromBody]RequestData<String> lastName)
         {
             var user = HttpContext.User;
             var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return _userLogicManager_.ChangeLastName(email, lastName.Data);
+            return await _userLogicManager_.ChangeLastName(email, lastName.Data);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public ActionResult<Boolean> ChangeEmail([FromBody]RequestData<String> email)
+        public async Task<ActionResult<Boolean>> ChangeEmail([FromBody]RequestData<String> email)
         {
             var user = HttpContext.User;
             var activeEmail = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return _userLogicManager_.ChangeLastName(activeEmail, email.Data);
+            return await _userLogicManager_.ChangeEmail(activeEmail, email.Data);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public ActionResult<Boolean> ChangePassword([FromBody]RequestData<String> password)
+        public async Task<ActionResult<Boolean>> ChangePassword([FromBody]RequestData<String> password)
         {
             var user = HttpContext.User;
             var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return _userLogicManager_.ChangePassword(email, password.Data);
+            return await _userLogicManager_.ChangePassword(email, password.Data);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]

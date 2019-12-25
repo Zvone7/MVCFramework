@@ -11,101 +11,74 @@ namespace MvcFrameworkDbl
     public class UserRepository : IUserRepository
     {
         readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
+
         public UserRepository(DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder)
         {
             _dbContextOptionsBuilder = dbContextOptionsBuilder;
         }
-        public async Task Add(EndUser user)
-        {
-            try
-            {
-                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
-                {
-                    context.User.Add(user);
-                    await context.SaveChangesAsync();
-                }
-            }
-            catch (Exception e)
-            {
-                //todo logging
-                throw;
-            }
-        }
-        public async Task Delete(EndUser entity)
-        {
-            throw new NotImplementedException();
-        }
 
-        public EndUser Get(Int32 id)
+        public async Task AddAsync(EndUser user)
         {
-            try
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
             {
-                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
-                {
-                    var user = context.User.FirstOrDefault(x => x.Id == id);
-                    return user;
-                }
-            }
-            catch (Exception e)
-            {
-                //todo logging
-                throw;
+                await context.User.AddAsync(user);
+                await context.SaveChangesAsync();
             }
         }
 
-        public EndUser Get(String email)
+        public async Task DeleteAsync(Int32 id)
         {
-            try
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
             {
-                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
-                {
-                    var user = context.User.FirstOrDefault(x => x.Email.Equals(email));
-                    return user;
-                }
-            }
-            catch (Exception e)
-            {
-                //todo logging
-                throw;
+                var user = await context.User.FindAsync(id);
+                user.IsActive = false;
+                context.Update(user);
+                await context.SaveChangesAsync();
             }
         }
 
-        public Boolean TryAuthenticate(String email, String password)
+        public async Task<EndUser> GetAsync(Int32 id)
         {
-            try
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
             {
-                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
-                {
-                    var user = context.User.FirstOrDefault(x => x.Email.Equals(email) && x.Password.Equals(password));
-                    if (user != null) return true; else return false;
-                }
-            }
-            catch (Exception e)
-            {
-                //todo logging
-                throw;
+                var user = await context.User.FindAsync(id);
+                return user;
             }
         }
 
-        public IEnumerable<EndUser> GetAll()
+        public async Task<EndUser> GetAsync(String email)
         {
-            throw new NotImplementedException();
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            {
+                var user = context.User.FirstOrDefault(x => x.Email.Equals(email));
+                return user;
+            }
         }
 
-        public async Task Update(EndUser entity)
+        public async Task<Boolean> TryAuthenticateAsync(String email, String password)
         {
-            try
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
             {
-                using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
-                {
-                    context.Update(entity);
-                    await context.SaveChangesAsync();
-                }
+                var user = context.User.FirstOrDefault(x => x.Email.Equals(email) && x.Password.Equals(password));
+                if (user != null) return true; else return false;
             }
-            catch (Exception e)
+        }
+
+        public async Task<IEnumerable<EndUser>> GetAllAsync()
+        {
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
             {
-                //todo logging
-                throw;
+                var users = context.User.Select(x => x).Where(u => u.IsActive);
+                return users;
+            }
+        }
+
+        public async Task UpdateAsync(EndUser entity)
+        {
+            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            {
+                context.Update(entity);
+                await context.SaveChangesAsync();
             }
         }
     }

@@ -6,10 +6,10 @@ namespace MvcFrameworkCml.Infrastructure
 {
     public interface IDataRepository<TEntity>
     {
-        IEnumerable<TEntity> GetAll();
-        TEntity Get(Int32 id);
-        Task Add(TEntity entity);
-        Task Update(TEntity entity);
-        Task Delete(TEntity entity);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<TEntity> GetAsync(Int32 id);
+        Task AddAsync(TEntity entity);
+        Task UpdateAsync(TEntity entity);
+        Task DeleteAsync(Int32 id);
     }
 }

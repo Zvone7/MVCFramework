@@ -75,10 +75,12 @@ namespace MvcFrameworkWeb
 
             // DI
             services.AddScoped(x => new ControllerHelper());
-            services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("testcategory"));
+            services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
             services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<IAppSettings, AppSettings>();
-            services.AddScoped(x => new UserLogicManager(x.GetService<IUserRepository>()));
+            services.AddScoped(x => new UserLogicManager(
+                x.GetService<IUserRepository>(),
+                x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));
             services.AddScoped(x => dbContextOptionsBuilder);
         }
 

@@ -3,5 +3,6 @@ unify requests (receive and send)
 remove sensitive data on return calls
 notifications (login, spinner for loading, errors)
 password complexity
-logging
 confirmation mail
+change "user" to MyProfile
+change changeName and other methods to use id instead of email
