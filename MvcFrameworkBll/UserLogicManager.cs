@@ -98,79 +98,88 @@ namespace MvcFrameworkBll
             }
         }
 
-        public async Task<Boolean> ChangeName(String activeEmail, String name)
+        public async Task<Boolean> ChangeName(Int32 id, String name)
         {
             try
             {
-                if (String.IsNullOrEmpty(name))
+                if (id <= 0)
                 {
-                    _logger_.LogError($"Unable to Change name of user - name null/empty for user {activeEmail}");
+                    _logger_.LogError($"Unable to {nameof(ChangeName)} of user - id <= 0");
                     return false;
                 }
-                var user = await GetAsync(activeEmail);
+                var user = await GetAsync(id);
                 user.Name = name;
                 await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Change name of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(
+                    $"Unable to {nameof(ChangeName)} of user with id {id}|" +
+                    $"|\n {e.Message} |" +
+                    $"|\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public async Task<Boolean> ChangeLastName(String activeEmail, String lastName)
+        public async Task<Boolean> ChangeLastName(Int32 id, String lastName)
         {
             try
             {
-                if (String.IsNullOrEmpty(lastName))
+                if (id <= 0)
                 {
-                    _logger_.LogError($"Unable to Change lastname of user - lastname null/empty for user {activeEmail}");
+                    _logger_.LogError($"Unable to {nameof(ChangeLastName)} of user - id <= 0");
                     return false;
                 }
-                var user = await GetAsync(activeEmail);
+                var user = await GetAsync(id);
                 user.LastName = lastName;
                 await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Change lastname of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(
+                    $"Unable to {nameof(ChangeLastName)} of user with id {id}|" +
+                    $"|\n {e.Message} |" +
+                    $"|\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public async Task<Boolean> ChangeEmail(String activeEmail, String email)
+        public async Task<Boolean> ChangeEmail(Int32 id, String email)
         {
             try
             {
-                if (String.IsNullOrEmpty(email))
+                if (id <= 0)
                 {
-                    _logger_.LogError($"Unable to Change email of user - email null/empty for user {activeEmail}");
+                    _logger_.LogError($"Unable to {nameof(ChangeEmail)} of user - id <= 0");
                     return false;
                 }
-                var user = await GetAsync(activeEmail);
+                var user = await GetAsync(id);
                 user.Email = email;
                 await _userRepository_.UpdateAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Change email of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(
+                    $"Unable to {nameof(ChangeEmail)} of user with id {id}|" +
+                    $"|\n {e.Message} |" +
+                    $"|\n {e.StackTrace}");
                 return false;
             }
         }
 
-        public async Task<Boolean> ChangePassword(String activeEmail, String password)
+        public async Task<Boolean> ChangePassword(Int32 id, String password)
         {
             try
             {
-                if (String.IsNullOrEmpty(password))
+                if (id <= 0)
                 {
-                    _logger_.LogError($"Unable to Change password of user - password null/empty for user {activeEmail}");
+                    _logger_.LogError($"Unable to {nameof(ChangePassword)} of user - id <= 0");
                     return false;
                 }
-                var user = await GetAsync(activeEmail);
+                var user = await GetAsync(id);
                 var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
                 user.Password = encryptedPassword;
                 await _userRepository_.UpdateAsync(user);
@@ -178,7 +187,10 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Change password of user with email {activeEmail}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(
+                    $"Unable to {nameof(ChangePassword)} of user with id {id}|" +
+                    $"|\n {e.Message} |" +
+                    $"|\n {e.StackTrace}");
                 return false;
             }
         }

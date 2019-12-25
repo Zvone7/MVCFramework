@@ -61,32 +61,40 @@ namespace MvcFrameworkWeb.Controllers
         public async Task<ActionResult<Boolean>> ChangeName([FromBody]RequestData<String> name)
         {
             var user = HttpContext.User;
-            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return await _userLogicManager_.ChangeName(email, name.Data);
+            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+                return await _userLogicManager_.ChangeName(id, name.Data);
+            return false;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangeLastName([FromBody]RequestData<String> lastName)
         {
             var user = HttpContext.User;
-            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return await _userLogicManager_.ChangeLastName(email, lastName.Data);
+            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+                return await _userLogicManager_.ChangeLastName(id, lastName.Data);
+            return false;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangeEmail([FromBody]RequestData<String> email)
         {
             var user = HttpContext.User;
-            var activeEmail = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return await _userLogicManager_.ChangeEmail(activeEmail, email.Data);
+            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+                return await _userLogicManager_.ChangeEmail(id, email.Data);
+            return false;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangePassword([FromBody]RequestData<String> password)
         {
             var user = HttpContext.User;
-            var email = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return await _userLogicManager_.ChangePassword(email, password.Data);
+            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+                return await _userLogicManager_.ChangePassword(id, password.Data);
+            return false;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]

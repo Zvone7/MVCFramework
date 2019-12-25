@@ -1,8 +1,6 @@
-async DB calls
-unify requests (receive and send)
-remove sensitive data on return calls
-notifications (login, spinner for loading, errors)
+unify requests (receive and send) -better error messages
+spinner for loading
 password complexity
+dont store email in plaintext
 confirmation mail
-change "user" to MyProfile
 change changeName and other methods to use id instead of email
