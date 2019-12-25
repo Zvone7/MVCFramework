@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkDbl;
 using MvcFrameworkWeb.Services;
+using System;
+using System.Linq;
 using System.Security.Principal;
 namespace MvcFrameworkWeb
 {
@@ -55,14 +58,28 @@ namespace MvcFrameworkWeb
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             dbContextOptionsBuilder.UseSqlServer(Configuration["ConnectionString:LocalDb"]);
 
+            // LOGGING
+            var minimumLoggingLevel = LogLevel.Information;
+            var loggingConfigurationSection = Configuration.GetSection("Logging").GetChildren().ToList();
+            var minimumLoggingLevelConfigSection = loggingConfigurationSection
+                .FirstOrDefault(x => x.GetSection("LogLevel").Exists())?
+                .GetChildren()
+                .FirstOrDefault(x => x.GetSection("Default").Exists());
+            if (Enum.TryParse(minimumLoggingLevelConfigSection?.Value, out LogLevel minimumLogingLevelConfigValue))
+                minimumLoggingLevel = minimumLogingLevelConfigValue;
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(minimumLoggingLevel);
+            });
+
             // DI
             services.AddScoped(x => new ControllerHelper());
+            services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("testcategory"));
             services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<IAppSettings, AppSettings>();
             services.AddScoped(x => new UserLogicManager(x.GetService<IUserRepository>()));
             services.AddScoped(x => dbContextOptionsBuilder);
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

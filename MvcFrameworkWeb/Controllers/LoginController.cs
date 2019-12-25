@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
 using MvcFrameworkCml.ViewModels;
@@ -10,14 +11,17 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using MvcFrameworkCml.ViewModels;
 
 namespace MvcFrameworkWeb.Controllers
 {
     public class LoginController : CustomBaseController
     {
         private readonly UserLogicManager _userLogicManager_;
-        public LoginController(UserLogicManager userLogicManager, ControllerHelper controllerHelper) : base(controllerHelper)
+        public LoginController(
+            UserLogicManager userLogicManager,
+            ControllerHelper controllerHelper,
+            ILogger logger
+            ) : base(controllerHelper, logger)
         {
             _userLogicManager_ = userLogicManager;
         }

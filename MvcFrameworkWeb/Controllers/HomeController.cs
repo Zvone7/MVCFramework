@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
@@ -10,7 +11,10 @@ namespace MvcFrameworkWeb.Controllers
     [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
     public class HomeController : CustomBaseController
     {
-        public HomeController(ControllerHelper controllerHelper) : base(controllerHelper) { }
+        public HomeController(
+            ControllerHelper controllerHelper,
+            ILogger logger
+            ) : base(controllerHelper, logger) { }
 
         public IActionResult Index()
         {
@@ -30,7 +34,7 @@ namespace MvcFrameworkWeb.Controllers
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
                 User = HttpContext.User.Identity.IsAuthenticated ? new EndUser(HttpContext.User) : null
-            }) ;
+            });
         }
     }
 }

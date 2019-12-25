@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
 using MvcFrameworkCml.ViewModels;
@@ -15,7 +16,11 @@ namespace MvcFrameworkWeb.Controllers
     public class UserController : CustomBaseController
     {
         private readonly UserLogicManager _userLogicManager_;
-        public UserController(UserLogicManager userLogicManager, ControllerHelper controllerHelper) : base(controllerHelper)
+        public UserController(
+            UserLogicManager userLogicManager,
+            ControllerHelper controllerHelper,
+            ILogger logger
+            ) : base(controllerHelper, logger)
         {
             _userLogicManager_ = userLogicManager;
         }

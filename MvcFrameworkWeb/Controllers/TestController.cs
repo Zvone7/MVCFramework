@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
 using MvcFrameworkWeb.Services;
 using System;
@@ -14,11 +15,12 @@ namespace MvcFrameworkWeb.Controllers
 {
     public class TestController : CustomBaseController
     {
-        public TestController(ControllerHelper controllerHelper) : base(controllerHelper) { }
+        public TestController(
+            ControllerHelper controllerHelper, 
+            ILogger logger
+            ) : base(controllerHelper, logger) { }
 
         [System.Web.Http.HttpGet]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Int32> Testing()
         {
             return 5;
@@ -28,6 +30,11 @@ namespace MvcFrameworkWeb.Controllers
         [Microsoft.AspNetCore.Mvc.Route("Test/AuthorizedEndpoint")]
         public ActionResult<String> AuthorizedEndpoint([FromUri]String value)
         {
+            _logger_.LogInformation($"__INFO LOG__{value}");
+            _logger_.LogWarning($"__Warning LOG__{value}");
+            _logger_.LogCritical($"__critical LOG__{value}");
+            _logger_.LogError($"__error LOG__{value}");
+            _logger_.LogDebug($"__debug LOG__{value}");
             return $"AUTHORIZED: Returning value {value}";
         }
 

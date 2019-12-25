@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
@@ -12,9 +13,12 @@ namespace MvcFrameworkWeb.Controllers
     {
 
         protected readonly ControllerHelper _controllerHelper_;
-        public CustomBaseController(ControllerHelper controllerHelper)
+        protected readonly ILogger _logger_;
+
+        public CustomBaseController(ControllerHelper controllerHelper, ILogger logger)
         {
             _controllerHelper_ = controllerHelper;
+            _logger_ = logger;
         }
 
         protected IActionResult GetViewModelOrRedirect(HttpContext httpContext)
