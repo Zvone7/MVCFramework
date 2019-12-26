@@ -3,5 +3,3 @@ spinner for loading
 password complexity
 confirmation mail
 update db to use sql not EF
-fix logging - exception forward
-handle that changes of properties are actual changes on backend - new email/name must be new email/name

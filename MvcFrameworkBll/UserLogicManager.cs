@@ -36,7 +36,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Get user with id {id}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to Get user with id {id}");
                 return null;
             }
         }
@@ -64,7 +64,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Get user with username {email}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to Get user with username {email}");
                 return null;
             }
         }
@@ -79,7 +79,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to GetAll users |\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to GetAll users.");
                 return null;
             }
         }
@@ -109,7 +109,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to Add user |\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to Add user.");
                 return false;
             }
         }
@@ -135,10 +135,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError(
-                    $"Unable to {nameof(ChangeName)} of user with id {id}|" +
-                    $"|\n {e.Message} |" +
-                    $"|\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to {nameof(ChangeName)} of user with id {id}");
                 return false;
             }
         }
@@ -165,10 +162,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError(
-                    $"Unable to {nameof(ChangeLastName)} of user with id {id}|" +
-                    $"|\n {e.Message} |" +
-                    $"|\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to {nameof(ChangeLastName)} of user with id {id}|");
                 return false;
             }
         }
@@ -195,10 +189,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError(
-                    $"Unable to {nameof(ChangeEmail)} of user with id {id}|" +
-                    $"|\n {e.Message} |" +
-                    $"|\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to {nameof(ChangeEmail)} of user with id {id}|");
                 return false;
             }
         }
@@ -225,10 +216,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError(
-                    $"Unable to {nameof(ChangePassword)} of user with id {id}|" +
-                    $"|\n {e.Message} |" +
-                    $"|\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to {nameof(ChangePassword)} of user with id {id}|");
                 return false;
             }
         }
@@ -256,9 +244,7 @@ namespace MvcFrameworkBll
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to authenticate user with email {email}" +
-                    $"|\n {e.Message}" +
-                    $"|\n {e.StackTrace}");
+                _logger_.LogError(e, $"Unable to authenticate user with email {email}");
                 return null;
             }
         }

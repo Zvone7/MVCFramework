@@ -16,7 +16,7 @@ namespace MvcFrameworkWeb.Controllers
     public class TestController : CustomBaseController
     {
         public TestController(
-            ControllerHelper controllerHelper, 
+            ControllerHelper controllerHelper,
             ILogger logger
             ) : base(controllerHelper, logger) { }
 
@@ -30,11 +30,6 @@ namespace MvcFrameworkWeb.Controllers
         [Microsoft.AspNetCore.Mvc.Route("Test/AuthorizedEndpoint")]
         public ActionResult<String> AuthorizedEndpoint([FromUri]String value)
         {
-            _logger_.LogInformation($"__INFO LOG__{value}");
-            _logger_.LogWarning($"__Warning LOG__{value}");
-            _logger_.LogCritical($"__critical LOG__{value}");
-            _logger_.LogError($"__error LOG__{value}");
-            _logger_.LogDebug($"__debug LOG__{value}");
             return $"AUTHORIZED: Returning value {value}";
         }
 
