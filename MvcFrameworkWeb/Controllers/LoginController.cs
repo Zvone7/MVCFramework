@@ -29,16 +29,13 @@ namespace MvcFrameworkWeb.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<EndUser>> LogIn([FromBody]UserLoginData userLogin)
         {
-            //CreateAdminUser();
-            var user = await _userLogicManager_.Authenticate(userLogin.Email, userLogin.Password);
+            var user = await _userLogicManager_.AuthenticateAsync(userLogin.Email, userLogin.Password);
             if (user != null)
             {
-
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Name),
                     new Claim(ClaimTypes.Role, user.Role),
-                    new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypesExt.Id, user.Id.ToString()),
                     new Claim(ClaimTypesExt.LastName, user.LastName),
                 };
@@ -71,15 +68,20 @@ namespace MvcFrameworkWeb.Controllers
             await HttpContext.SignOutAsync();
         }
 
+        public async Task CreateAdmin()
+        {
+            await CreateAdminUser();
+        }
+
         public IActionResult Index()
         {
             var res = GetViewModelOrRedirect(HttpContext);
             return View();
         }
 
-        private void CreateAdminUser()
+        private async Task CreateAdminUser()
         {
-            _userLogicManager_.AddAsync(
+            await _userLogicManager_.AddAsync(
                 new EndUser()
                 {
                     Email = "admin@mail.com",

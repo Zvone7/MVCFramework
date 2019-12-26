@@ -46,7 +46,6 @@ namespace MvcFrameworkCml
 
             Name = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name)).Value;
             LastName = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.LastName)).Value;
-            Email = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email)).Value;
             Role = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Role)).Value;
         }
 
@@ -76,6 +75,7 @@ namespace MvcFrameworkCml
         public EndUser ReturnWithoutSensitiveData()
         {
             var userWithoutSensitiveData = new EndUser(this);
+            userWithoutSensitiveData.Email = null;
             userWithoutSensitiveData.Password = null;
             userWithoutSensitiveData.Salt = null;
             return userWithoutSensitiveData;

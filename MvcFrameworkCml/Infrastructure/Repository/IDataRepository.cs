@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MvcFrameworkCml.Infrastructure
+namespace MvcFrameworkCml.Infrastructure.Repository
 {
     public interface IDataRepository<TEntity>
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<TEntity> GetAsync(Int32 id);
+        Task<TEntity> GetAsync(int id);
         Task AddAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
-        Task DeleteAsync(Int32 id);
+        Task DeleteAsync(int id);
     }
 }

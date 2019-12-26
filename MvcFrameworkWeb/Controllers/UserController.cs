@@ -26,12 +26,6 @@ namespace MvcFrameworkWeb.Controllers
             _userLogicManager_ = userLogicManager;
         }
 
-        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        public async Task<ActionResult<EndUser>> GetUserByEmail([FromUri]String email)
-        {
-            return await _userLogicManager_.GetAsync(email);
-        }
-
         [Authorize(Roles = Role.Access.MUST_BE_ADMIN)]
         public async Task<ActionResult<EndUser>> GetUserById([FromUri]Int32 id)
         {
@@ -42,26 +36,23 @@ namespace MvcFrameworkWeb.Controllers
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<EndUser>> Me()
         {
-            var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            return await _userLogicManager_.GetAsync(email);
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+                return await _userLogicManager_.GetAsync(id);
+            else return null;
         }
 
         [AllowAnonymous]
         public async Task<ActionResult<Boolean>> Add([FromBody]EndUser user)
         {
-            var loggedInUserEmail = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-            if (String.IsNullOrWhiteSpace(loggedInUserEmail))
-                user.Id = 0;
-            else
-                user.Id = 1;
+            user.Id = 0;
             return await _userLogicManager_.AddAsync(user);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangeName([FromBody]RequestData<String> name)
         {
-            var user = HttpContext.User;
-            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
             if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
                 return await _userLogicManager_.ChangeName(id, name.Data);
             return false;
@@ -70,8 +61,7 @@ namespace MvcFrameworkWeb.Controllers
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangeLastName([FromBody]RequestData<String> lastName)
         {
-            var user = HttpContext.User;
-            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
             if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
                 return await _userLogicManager_.ChangeLastName(id, lastName.Data);
             return false;
@@ -80,8 +70,7 @@ namespace MvcFrameworkWeb.Controllers
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangeEmail([FromBody]RequestData<String> email)
         {
-            var user = HttpContext.User;
-            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
             if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
                 return await _userLogicManager_.ChangeEmail(id, email.Data);
             return false;
@@ -90,8 +79,7 @@ namespace MvcFrameworkWeb.Controllers
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public async Task<ActionResult<Boolean>> ChangePassword([FromBody]RequestData<String> password)
         {
-            var user = HttpContext.User;
-            var idString = user.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
             if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
                 return await _userLogicManager_.ChangePassword(id, password.Data);
             return false;

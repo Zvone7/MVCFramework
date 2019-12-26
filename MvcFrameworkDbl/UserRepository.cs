@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MvcFrameworkCml;
-using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkCml.Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +46,9 @@ namespace MvcFrameworkDbl
             }
         }
 
+        /// <summary>
+        /// Email must be hashed.
+        /// </summary>
         public async Task<EndUser> GetAsync(String email)
         {
             using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
@@ -55,6 +58,9 @@ namespace MvcFrameworkDbl
             }
         }
 
+        /// <summary>
+        /// Email must be hashed.
+        /// </summary>
         public async Task<Boolean> TryAuthenticateAsync(String email, String password)
         {
             using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))

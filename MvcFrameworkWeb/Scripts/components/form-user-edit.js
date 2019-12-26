@@ -16,6 +16,7 @@ export var formUserEdit = Vue.component('form-user-edit',
                 Name: '',
                 LastName: '',
                 Email: '',
+                EmailAgain: '',
                 Password: '',
                 PasswordAgain: ''
             }
@@ -43,14 +44,15 @@ export var formUserEdit = Vue.component('form-user-edit',
                 });
             },
             isSubmitEmailButtonDisabled() {
-                (this.getUserDataTest()).then(userData => {
-                    let isDisabled = true;
-                    if (this.Email !== '' &&
-                        this.Email !== userData.email) {
-                        isDisabled = false;
-                    }
-                    return isDisabled;
-                });
+                let isDisabled = true;
+                if (
+                    this.Email !== '' &&
+                    this.EmailAgain !== '' &&
+                    this.Email === this.EmailAgain
+                ) {
+                    isDisabled = false;
+                }
+                return isDisabled;
             },
             isSubmitPasswordButtonDisabled() {
                 let isDisabled = true;
@@ -97,14 +99,12 @@ export var formUserEdit = Vue.component('form-user-edit',
 
                         this.Name = userData.name;
                         this.LastName = userData.lastName;
-                        this.Email = userData.email;
                         this.Password = '';
                         this.PasswordAgain = '';
 
                         var userData = {
                             name: data.data.name,
-                            lastName: data.data.lastName,
-                            email: data.data.email
+                            lastName: data.data.lastName
                         }
                         storedUserData = userData;
                         return userData;
@@ -156,6 +156,9 @@ export var formUserEdit = Vue.component('form-user-edit',
 
                         <label><b>Change email</b></label>
                         <input type="text" placeholder="Enter email" v-model="Email" autocomplete="email" required>
+                        
+                        <label><b>Email again</b></label>
+                        <input type="text" placeholder="Enter email again" v-model="EmailAgain" autocomplete="new-email" required>
 
                         <button 
                             type="button" 

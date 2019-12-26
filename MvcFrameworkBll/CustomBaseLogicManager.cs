@@ -1,13 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using MvcFrameworkCml.Infrastructure;
 
 namespace MvcFrameworkBll
 {
     public class CustomBaseLogicManager
     {
+        protected readonly IAppSettings _appSettings_;
         protected readonly ILogger _logger_;
 
-        public CustomBaseLogicManager(ILogger logger)
+        public CustomBaseLogicManager(IAppSettings settings, ILogger logger)
         {
+            _appSettings_ = settings;
             _logger_ = logger;
         }
     }

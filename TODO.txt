@@ -1,6 +1,7 @@
-unify requests (receive and send) -better error messages
+unify requests (receive and send) - better error messages
 spinner for loading
 password complexity
-dont store email in plaintext
 confirmation mail
-change changeName and other methods to use id instead of email
+update db to use sql not EF
+fix logging - exception forward
+handle that changes of properties are actual changes on backend - new email/name must be new email/name

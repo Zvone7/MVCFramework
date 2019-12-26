@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkCml.Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,11 @@ namespace MvcFrameworkBll
     {
         private readonly IUserRepository _userRepository_;
 
-        public UserLogicManager(IUserRepository userRepository, ILogger logger) : base(logger)
+        public UserLogicManager(
+            IUserRepository userRepository,
+            IAppSettings appSettings,
+            ILogger logger
+            ) : base(appSettings, logger)
         {
             _userRepository_ = userRepository;
         }
@@ -36,7 +41,7 @@ namespace MvcFrameworkBll
             }
         }
 
-        public async Task<EndUser> GetAsync(String email)
+        private async Task<EndUser> GetAsync(String email, Boolean isHashed = false)
         {
             try
             {
@@ -45,7 +50,16 @@ namespace MvcFrameworkBll
                     _logger_.LogError($"Unable to Get user - email null/empty.");
                     return null;
                 }
-                var user = await _userRepository_.GetAsync(email);
+                EndUser user;
+                if (isHashed)
+                {
+                    user = await _userRepository_.GetAsync(email);
+                }
+                else
+                {
+                    var hashedEmail = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
+                    user = await _userRepository_.GetAsync(hashedEmail);
+                }
                 return user;
             }
             catch (Exception e)
@@ -80,9 +94,11 @@ namespace MvcFrameworkBll
                     return false;
                 }
                 var salt = BCrypt.Net.BCrypt.GenerateSalt();
-                var password = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
+                var passwordHashed = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
+                var emailHashed = BCrypt.Net.BCrypt.HashPassword(user.Email, _appSettings_.Secret);
                 user.Salt = salt;
-                user.Password = password;
+                user.Password = passwordHashed;
+                user.Email = emailHashed;
                 user.DateJoined = DateTime.UtcNow.Date;
                 user.Role = !String.IsNullOrWhiteSpace(user.Role) ? user.Role : Role.USER;
                 user.IsActive = true;
@@ -156,7 +172,8 @@ namespace MvcFrameworkBll
                     return false;
                 }
                 var user = await GetAsync(id);
-                user.Email = email;
+                var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
+                user.Email = emailHashed;
                 await _userRepository_.UpdateAsync(user);
                 return true;
             }
@@ -195,29 +212,32 @@ namespace MvcFrameworkBll
             }
         }
 
-        public async Task<EndUser> Authenticate(String email, String password)
+        public async Task<EndUser> AuthenticateAsync(String email, String password)
         {
             try
             {
-                var user = await GetAsync(email);
+                var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
+                var user = await GetAsync(emailHashed, true);
 
                 if (user == null)
                 {
                     _logger_.LogError($"User with email {email} not found");
                     return null;
                 }
-                var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
-                if (!(await _userRepository_.TryAuthenticateAsync(email, encryptedPassword)))
+                var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
+                if (!(await _userRepository_.TryAuthenticateAsync(emailHashed, passwordHashed)))
                 {
                     _logger_.LogError($"User with email {email} not authenticated");
                     return null;
                 }
-                // remove password before returning
+                // remove sensitive data before returning
                 return user.ReturnWithoutSensitiveData();
             }
             catch (Exception e)
             {
-                _logger_.LogError($"Unable to authenticate user with email {email}|\n {e.Message} |\n {e.StackTrace}");
+                _logger_.LogError($"Unable to authenticate user with email {email}" +
+                    $"|\n {e.Message}" +
+                    $"|\n {e.StackTrace}");
                 return null;
             }
         }

@@ -8,12 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkBll;
-using MvcFrameworkCml;
-using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkCml.Infrastructure.Repository;
+using MvcFrameworkCml.Startup;
 using MvcFrameworkDbl;
 using MvcFrameworkWeb.Services;
 using System;
-using System.Linq;
 using System.Security.Principal;
 namespace MvcFrameworkWeb
 {
@@ -29,59 +28,64 @@ namespace MvcFrameworkWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
+            try
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+                services.Configure<CookiePolicyOptions>(options =>
+                    {
+                        // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                        options.CheckConsentNeeded = context => true;
+                        options.MinimumSameSitePolicy = SameSiteMode.None;
+                    });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
+                services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
-                options =>
+                // COOKIES
+                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+                    options =>
+                    {
+                        options.LoginPath = "/Login";
+                        options.AccessDeniedPath = "/Login";
+                        options.Cookie.Name = "UserLoginCookie";
+                        options.Cookie.HttpOnly = false;
+                        //MinimumSameSitePolicy = SameSiteMode.Strict,
+                    });
+
+                // APPSETTINGS
+                var appSettings = AppSettingsBuilder.Build();
+                services.AddScoped(x => appSettings);
+
+                // DATABASE
+                var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+                dbContextOptionsBuilder.UseSqlServer(appSettings.ConnectionString);
+
+                // LOGGING
+                var minimumLoggingLevel = LogLevel.Information;
+                if (!String.IsNullOrWhiteSpace(appSettings.LoggingSettings.DefaultLogLevel) &&
+                    Enum.TryParse(appSettings.LoggingSettings.DefaultLogLevel, out LogLevel minimumLogingLevelConfigValue))
+                    minimumLoggingLevel = minimumLogingLevelConfigValue;
+                services.AddLogging(builder =>
                 {
-                    options.LoginPath = "/Login";
-                    options.AccessDeniedPath = "/Login";
-                    options.Cookie.Name = "UserLoginCookie";
-                    options.Cookie.HttpOnly = false;
-                    //MinimumSameSitePolicy = SameSiteMode.Strict,
+                    builder.AddConsole();
+                    builder.SetMinimumLevel(minimumLoggingLevel);
                 });
 
-            // configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
-
-            // DATABASE
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            dbContextOptionsBuilder.UseSqlServer(Configuration["ConnectionString:LocalDb"]);
-
-            // LOGGING
-            var minimumLoggingLevel = LogLevel.Information;
-            var loggingConfigurationSection = Configuration.GetSection("Logging").GetChildren().ToList();
-            var minimumLoggingLevelConfigSection = loggingConfigurationSection
-                .FirstOrDefault(x => x.GetSection("LogLevel").Exists())?
-                .GetChildren()
-                .FirstOrDefault(x => x.GetSection("Default").Exists());
-            if (Enum.TryParse(minimumLoggingLevelConfigSection?.Value, out LogLevel minimumLogingLevelConfigValue))
-                minimumLoggingLevel = minimumLogingLevelConfigValue;
-            services.AddLogging(builder =>
+                // DI
+                services.AddScoped(x => new ControllerHelper());
+                services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
+                services.AddScoped<IUserRepository, UserRepository>();
+                services.AddScoped(x => new UserLogicManager(
+                    x.GetService<IUserRepository>(),
+                    appSettings,
+                    x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));
+                services.AddScoped(x => dbContextOptionsBuilder);
+            }
+            catch (Exception e)
             {
-                builder.AddConsole();
-                builder.SetMinimumLevel(minimumLoggingLevel);
-            });
 
-            // DI
-            services.AddScoped(x => new ControllerHelper());
-            services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
-            services.AddScoped<IUserRepository, UserRepository>();
-            //services.AddScoped<IAppSettings, AppSettings>();
-            services.AddScoped(x => new UserLogicManager(
-                x.GetService<IUserRepository>(),
-                x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));
-            services.AddScoped(x => dbContextOptionsBuilder);
+                throw;
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
