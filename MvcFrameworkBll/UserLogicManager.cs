@@ -124,6 +124,11 @@ namespace MvcFrameworkBll
                     return false;
                 }
                 var user = await GetAsync(id);
+                if (String.Equals(name, user.Name, StringComparison.InvariantCulture))
+                {
+                    _logger_.LogError($"Unable to {nameof(ChangeName)} of user - new value same as the old one");
+                    return false;
+                }
                 user.Name = name;
                 await _userRepository_.UpdateAsync(user);
                 return true;
@@ -148,6 +153,12 @@ namespace MvcFrameworkBll
                     return false;
                 }
                 var user = await GetAsync(id);
+
+                if (String.Equals(lastName, user.LastName, StringComparison.InvariantCulture))
+                {
+                    _logger_.LogError($"Unable to {nameof(ChangeLastName)} of user - new value same as the old one");
+                    return false;
+                }
                 user.LastName = lastName;
                 await _userRepository_.UpdateAsync(user);
                 return true;
@@ -173,6 +184,11 @@ namespace MvcFrameworkBll
                 }
                 var user = await GetAsync(id);
                 var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
+                if (String.Equals(emailHashed, user.Email, StringComparison.InvariantCulture))
+                {
+                    _logger_.LogError($"Unable to {nameof(ChangeEmail)} of user - new value same as the old one");
+                    return false;
+                }
                 user.Email = emailHashed;
                 await _userRepository_.UpdateAsync(user);
                 return true;
@@ -198,6 +214,11 @@ namespace MvcFrameworkBll
                 }
                 var user = await GetAsync(id);
                 var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
+                if (String.Equals(encryptedPassword, user.Password, StringComparison.InvariantCulture))
+                {
+                    _logger_.LogError($"Unable to {nameof(ChangePassword)} of user - new value same as the old one");
+                    return false;
+                }
                 user.Password = encryptedPassword;
                 await _userRepository_.UpdateAsync(user);
                 return true;
