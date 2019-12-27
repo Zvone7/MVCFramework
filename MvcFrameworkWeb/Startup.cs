@@ -56,10 +56,6 @@ namespace MvcFrameworkWeb
                 var appSettings = AppSettingsBuilder.Build();
                 services.AddScoped(x => appSettings);
 
-                // DATABASE
-                var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-                dbContextOptionsBuilder.UseSqlServer(appSettings.ConnectionString);
-
                 // LOGGING
                 var minimumLoggingLevel = LogLevel.Information;
                 if (!String.IsNullOrWhiteSpace(appSettings.LoggingSettings.DefaultLogLevel) &&
@@ -79,7 +75,6 @@ namespace MvcFrameworkWeb
                     x.GetService<IUserRepository>(),
                     appSettings,
                     x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));
-                services.AddScoped(x => dbContextOptionsBuilder);
             }
             catch (Exception e)
             {

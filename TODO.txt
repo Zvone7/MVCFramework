@@ -1,5 +1,7 @@
 unify requests (receive and send) - better error messages
+	one type from BLL
+	one type from DB
 spinner for loading
 password complexity
 confirmation mail
-update db to use sql not EF
+register not working?

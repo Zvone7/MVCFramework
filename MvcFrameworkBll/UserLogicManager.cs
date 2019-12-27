@@ -41,7 +41,10 @@ namespace MvcFrameworkBll
             }
         }
 
-        private async Task<EndUser> GetAsync(String email, Boolean isHashed = false)
+        private async Task<EndUser> GetAsync(
+            String email,
+            Boolean isHashed = false,
+            Boolean requestOnlyActiveUsers = true)
         {
             try
             {
@@ -53,7 +56,7 @@ namespace MvcFrameworkBll
                 EndUser user;
                 if (isHashed)
                 {
-                    user = await _userRepository_.GetAsync(email);
+                    user = await _userRepository_.GetAsync(email, requestOnlyActiveUsers);
                 }
                 else
                 {
@@ -88,11 +91,22 @@ namespace MvcFrameworkBll
         {
             try
             {
-                if (String.IsNullOrEmpty(user.Password) || String.IsNullOrEmpty(user.Email))
+                if (String.IsNullOrEmpty(user.Password) ||
+                    String.IsNullOrEmpty(user.Email) ||
+                    String.IsNullOrEmpty(user.LastName) ||
+                    String.IsNullOrEmpty(user.Name))
                 {
-                    _logger_.LogError($"Unable to Authenticate user - user/password are null/empty.");
+                    _logger_.LogError($"Unable to add user - some properties are null/empty.");
                     return false;
                 }
+
+                var existingUser = GetAsync(user.Email, isHashed: false, requestOnlyActiveUsers: false);
+                if (existingUser != null)
+                {
+                    _logger_.LogError($"Unable to add user - user with same email already exists.");
+                    return false;
+                }
+
                 var salt = BCrypt.Net.BCrypt.GenerateSalt();
                 var passwordHashed = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
                 var emailHashed = BCrypt.Net.BCrypt.HashPassword(user.Email, _appSettings_.Secret);
@@ -110,6 +124,82 @@ namespace MvcFrameworkBll
             catch (Exception e)
             {
                 _logger_.LogError(e, $"Unable to Add user.");
+                return false;
+            }
+        }
+
+        ///// <summary>
+        ///// Not used
+        ///// </summary>
+        //public async Task<Boolean> UpdateAsync(EndUser user)
+        //{
+        //    try
+        //    {
+        //        if (String.IsNullOrEmpty(user.Password) ||
+        //            String.IsNullOrEmpty(user.Email) ||
+        //            String.IsNullOrEmpty(user.LastName) ||
+        //            String.IsNullOrEmpty(user.Name))
+        //        {
+        //            _logger_.LogError($"Unable to update user - some properties are null/empty.");
+        //            return false;
+        //        }
+
+        //        var possibleExistingUserWithSameEmail = GetAsync(user.Email, isHashed: false, requestOnlyActiveUsers: false);
+        //        if (possibleExistingUserWithSameEmail != null && possibleExistingUserWithSameEmail.Id != user.Id)
+        //        {
+        //            _logger_.LogError($"Unable to update user - user with same email already exists.");
+        //            return false;
+        //        }
+
+        //        var userInDb = await GetAsync(user.Id);
+        //        if (userInDb == null)
+        //        {
+        //            _logger_.LogError($"Unable to update user - active user not found.");
+        //            return false;
+        //        }
+
+
+        //        if (!String.Equals(userInDb.Name, user.Name, StringComparison.Ordinal))
+        //            userInDb.Name = user.Name;
+
+        //        if (!String.Equals(userInDb.LastName, user.LastName, StringComparison.Ordinal))
+        //            userInDb.LastName = user.LastName;
+
+        //        var passwordHashed = BCrypt.Net.BCrypt.HashPassword(user.Password, userInDb.Salt);
+        //        if (!String.Equals(userInDb.Password, passwordHashed, StringComparison.Ordinal))
+        //            userInDb.Password = passwordHashed;
+
+        //        var emailHashed = BCrypt.Net.BCrypt.HashPassword(user.Email, _appSettings_.Secret);
+        //        if (!String.Equals(userInDb.Email, emailHashed, StringComparison.Ordinal))
+        //        {
+        //            userInDb.Email = emailHashed;
+        //            //todo - send confirmation mail when updating email
+        //        }
+
+        //        await _userRepository_.UpdateAsync(userInDb);
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger_.LogError(e, $"Unable to Update user.");
+        //        return false;
+        //    }
+        //}
+
+        public async Task<Boolean> DeleteAsync(Int32 id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    _logger_.LogError($"Unable to Delete user with id {id}");
+                    return false;
+                }
+                return await _userRepository_.DeleteAsync(id);
+            }
+            catch (Exception e)
+            {
+                _logger_.LogError(e, $"Unable to Delete user with id {id}");
                 return false;
             }
         }

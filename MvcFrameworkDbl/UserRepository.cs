@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,38 +12,132 @@ namespace MvcFrameworkDbl
 {
     public class UserRepository : IUserRepository
     {
-        readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
+        private readonly IAppSettings appSettings;
 
-        public UserRepository(DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder)
+        public UserRepository(IAppSettings appSettings)
         {
-            _dbContextOptionsBuilder = dbContextOptionsBuilder;
+            this.appSettings = appSettings;
         }
+
+        #region SQL_HELPERS
+
+        private String GetSelectUserSql(
+            Int32 id = 0,
+            String email = default,
+            String password = default,
+            Boolean mustBeActive = true)
+        {
+            var sql =
+                $"SELECT " +
+                $"[Id]" +
+                $",[Name]" +
+                $",[LastName]" +
+                $",[Email]" +
+                $",[Password]" +
+                $",[Salt]" +
+                $",[Role]" +
+                $",[EmailConfirmed]" +
+                $",[IsActive]" +
+                $",[DateJoined]" +
+                $"FROM [TestDb].[dbo].[User]";
+            if (id > 0)
+            {
+                sql += $" WHERE [Id] = {id}";
+                if (mustBeActive)
+                    sql += $" AND [IsActive] = 1";
+            }
+            else if (!String.IsNullOrWhiteSpace(email))
+            {
+                sql += $" WHERE [Email] like '{email}'";
+                if (!String.IsNullOrWhiteSpace(password))
+                    sql += $" AND [Password] like '{password}'";
+                if (mustBeActive)
+                    sql += $" AND [IsActive] = 1";
+            }
+            else
+            {
+                if (mustBeActive) sql += " WHERE [IsActive] = 1";
+            }
+            return sql;
+        }
+
+        private String GetInsertUserSql(EndUser user)
+        {
+            return
+                $"INSERT INTO [TestDb].[dbo].[User]" +
+                $"([Name],[LastName]," +
+                $"[Email],[Password]," +
+                $"[Salt],[Role]," +
+                $"[EmailConfirmed],[IsActive]," +
+                $"[DateJoined])" +
+                $"VALUES(" +
+                $"'{user.Name}','{user.LastName}'," +
+                $"'{user.Email}','{user.Password}'," +
+                $"'{user.Salt}','{user.Role}'," +
+                $"'{user.EmailConfirmed}','{user.IsActive}'," +
+                $"'{user.DateJoined.Value.ToString("yyyy-MM-dd HH:mm:ss.fff")}')";
+        }
+
+        private String GetUpdateUserSql(EndUser user)
+        {
+            return
+                $"UPDATE [TestDb].[dbo].[User]" +
+                $" SET" +
+                $"[Name] = '{user.Name}'" +
+                $",[LastName]= '{user.LastName}'" +
+                $",[Email]= '{user.Email}'" +
+                $",[Password]= '{user.Password}'" +
+                $",[Salt]= '{user.Salt}'" +
+                $",[Role]= '{user.Role}'" +
+                $",[EmailConfirmed]= '{user.EmailConfirmed}'" +
+                $",[IsActive]= '{user.IsActive}'" +
+                $",[DateJoined]= '{user.DateJoined.Value.ToString("yyyy-MM-dd HH:mm:ss.fff")}'" +
+                $"WHERE Id = {user.Id}";
+        }
+
+        private String GetDeleteUserSql(Int32 id)
+        {
+            return
+                $"UPDATE [TestDb].[dbo].[User]" +
+                $" SET" +
+                $"[IsActive]= '{false}'" +
+                $"WHERE Id = {id}";
+        }
+
+        #endregion
 
         public async Task AddAsync(EndUser user)
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            var sql = $"{GetInsertUserSql(user)}";
+
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                await context.User.AddAsync(user);
-                await context.SaveChangesAsync();
+                var result = await connection.ExecuteAsync(sql);
             }
         }
 
-        public async Task DeleteAsync(Int32 id)
+        public async Task<Boolean> DeleteAsync(Int32 id)
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            var sql = $"{GetDeleteUserSql(id)}";
+
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                var user = await context.User.FindAsync(id);
-                user.IsActive = false;
-                context.Update(user);
-                await context.SaveChangesAsync();
+                var result = await connection.ExecuteAsync(sql);
+                return result > 0 ? true : false;
             }
         }
 
-        public async Task<EndUser> GetAsync(Int32 id)
+        public async Task<EndUser> GetAsync(Int32 id, Boolean mustBeActive = true)
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            var sql = $"{GetSelectUserSql(id)}";
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                var user = await context.User.FindAsync(id);
+                var result = await connection.QueryAsync<EndUser>(sql);
+                var user = result.FirstOrDefault();
+                if (user == null) throw new KeyNotFoundException($"User with id ({id}) not found.");
+                if (result.Count() > 1) throw new InvalidProgramException($"Two users with same id ({id}) found.");
+                if (!user.IsActive) throw new Exception($"User with id ({id}) not active.");
+                if (!user.EmailConfirmed) throw new Exception($"User with email ({id}) not confirmed.");
                 return user;
             }
         }
@@ -49,11 +145,17 @@ namespace MvcFrameworkDbl
         /// <summary>
         /// Email must be hashed.
         /// </summary>
-        public async Task<EndUser> GetAsync(String email)
+        public async Task<EndUser> GetAsync(String email, Boolean mustBeActive = true)
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            var sql = $"{GetSelectUserSql(0, email, "", mustBeActive)}";
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                var user = context.User.FirstOrDefault(x => x.Email.Equals(email));
+                var result = await connection.QueryAsync<EndUser>(sql);
+                var user = result.FirstOrDefault();
+                if (user == null) throw new KeyNotFoundException($"User with email {email} not found.");
+                if (result.Count() > 1) throw new InvalidProgramException($"Two users with same email ({email} -> {user.Email}) found.");
+                if (!user.IsActive) throw new Exception($"User with email ({email} -> {user.Email}) not active.");
+                if (!user.EmailConfirmed) throw new Exception($"User with email ({email} -> {user.Email}) not confirmed.");
                 return user;
             }
         }
@@ -63,28 +165,35 @@ namespace MvcFrameworkDbl
         /// </summary>
         public async Task<Boolean> TryAuthenticateAsync(String email, String password)
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            var sql = $"{GetSelectUserSql(0, email, password)}";
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                var user = context.User.FirstOrDefault(x => x.Email.Equals(email) && x.Password.Equals(password));
-                if (user != null) return true; else return false;
+                var result = await connection.QueryAsync<EndUser>(sql);
+                var user = result.FirstOrDefault();
+                if (user == null) throw new KeyNotFoundException($"User with email {email} and password {password} not found.");
+                if (result.Count() > 1) throw new InvalidProgramException($"Two users with same email ({email} -> {user.Email}) found.");
+                if (!user.IsActive) throw new Exception($"User with email ({email} -> {user.Email}) not active.");
+                if (!user.EmailConfirmed) throw new Exception($"User with email ({email} -> {user.Email}) not confirmed.");
+                return true;
             }
         }
 
         public async Task<IEnumerable<EndUser>> GetAllAsync()
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                var users = context.User.Select(x => x).Where(u => u.IsActive);
-                return users;
+                var result = await connection.QueryAsync<EndUser>(GetSelectUserSql());
+                return result;
             }
         }
 
-        public async Task UpdateAsync(EndUser entity)
+        public async Task UpdateAsync(EndUser user)
         {
-            using (var context = new DatabaseContext(_dbContextOptionsBuilder.Options))
+            var sql = $"{GetUpdateUserSql(user)}";
+
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
-                context.Update(entity);
-                await context.SaveChangesAsync();
+                var result = await connection.ExecuteAsync(sql);
             }
         }
     }
