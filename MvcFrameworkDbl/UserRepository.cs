@@ -106,7 +106,7 @@ namespace MvcFrameworkDbl
 
         #endregion
 
-        public async Task AddAsync(EndUser user)
+        public async Task AddEntityAsync(EndUser user)
         {
             var sql = $"{GetInsertUserSql(user)}";
 
@@ -116,7 +116,7 @@ namespace MvcFrameworkDbl
             }
         }
 
-        public async Task<Boolean> DeleteAsync(Int32 id)
+        public async Task<Boolean> DeleteEntityAsync(Int32 id)
         {
             var sql = $"{GetDeleteUserSql(id)}";
 
@@ -127,7 +127,7 @@ namespace MvcFrameworkDbl
             }
         }
 
-        public async Task<EndUser> GetAsync(Int32 id, Boolean mustBeActive = true)
+        public async Task<EndUser> GetEntityAsync(Int32 id, Boolean mustBeActive = true)
         {
             var sql = $"{GetSelectUserSql(id)}";
             using (var connection = new SqlConnection(appSettings.ConnectionString))
@@ -145,7 +145,7 @@ namespace MvcFrameworkDbl
         /// <summary>
         /// Email must be hashed.
         /// </summary>
-        public async Task<EndUser> GetAsync(String email, Boolean mustBeActive = true)
+        public async Task<EndUser> GetUserWithSensitiveDataAsync(String email, Boolean mustBeActive = true)
         {
             var sql = $"{GetSelectUserSql(0, email, "", mustBeActive)}";
             using (var connection = new SqlConnection(appSettings.ConnectionString))
@@ -178,7 +178,7 @@ namespace MvcFrameworkDbl
             }
         }
 
-        public async Task<IEnumerable<EndUser>> GetAllAsync()
+        public async Task<IEnumerable<EndUser>> GetAllEntitiesAsync()
         {
             using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
@@ -187,7 +187,7 @@ namespace MvcFrameworkDbl
             }
         }
 
-        public async Task UpdateAsync(EndUser user)
+        public async Task UpdateEntityAsync(EndUser user)
         {
             var sql = $"{GetUpdateUserSql(user)}";
 

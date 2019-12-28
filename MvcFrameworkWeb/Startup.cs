@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -71,7 +70,7 @@ namespace MvcFrameworkWeb
                 services.AddScoped(x => new ControllerHelper());
                 services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
                 services.AddScoped<IUserRepository, UserRepository>();
-                services.AddScoped(x => new UserLogicManager(
+                services.AddScoped(x => new EndUserManager(
                     x.GetService<IUserRepository>(),
                     appSettings,
                     x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));

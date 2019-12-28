@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkBll;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Transfer;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System;
@@ -16,9 +17,9 @@ namespace MvcFrameworkWeb.Controllers
 {
     public class LoginController : CustomBaseController
     {
-        private readonly UserLogicManager _userLogicManager_;
+        private readonly EndUserManager _userLogicManager_;
         public LoginController(
-            UserLogicManager userLogicManager,
+            EndUserManager userLogicManager,
             ControllerHelper controllerHelper,
             ILogger logger
             ) : base(controllerHelper, logger)
@@ -27,17 +28,17 @@ namespace MvcFrameworkWeb.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<ActionResult<EndUser>> LogIn([FromBody]UserLoginData userLogin)
+        public async Task<ActionResult<Content<EndUser>>> LogIn([FromBody]UserLoginData userLogin)
         {
-            var user = await _userLogicManager_.AuthenticateAsync(userLogin.Email, userLogin.Password);
-            if (user != null)
+            var content = await _userLogicManager_.AuthenticateAsync(userLogin.Email, userLogin.Password);
+            if (!content.HasError)
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.Name),
-                    new Claim(ClaimTypes.Role, user.Role),
-                    new Claim(ClaimTypesExt.Id, user.Id.ToString()),
-                    new Claim(ClaimTypesExt.LastName, user.LastName),
+                    new Claim(ClaimTypes.Name, content.Data.Name),
+                    new Claim(ClaimTypesExt.LastName, content.Data.LastName),
+                    new Claim(ClaimTypes.Role, content.Data.Role),
+                    new Claim(ClaimTypesExt.Id, content.Data.Id.ToString()),
                 };
 
                 var claimsIdentity = new ClaimsIdentity(
@@ -59,7 +60,7 @@ namespace MvcFrameworkWeb.Controllers
                     authProperties);
             }
 
-            return user;
+            return content;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]

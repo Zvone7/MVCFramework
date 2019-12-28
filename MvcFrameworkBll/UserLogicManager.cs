@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BCrypt.Net;
+using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.Infrastructure.Repository;
+using MvcFrameworkCml.Transfer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,75 +11,95 @@ using System.Threading.Tasks;
 
 namespace MvcFrameworkBll
 {
-    public class UserLogicManager : CustomBaseLogicManager
+    public class EndUserManager : CustomBaseLogicManager
     {
         private readonly IUserRepository _userRepository_;
 
-        public UserLogicManager(
-            IUserRepository userRepository,
-            IAppSettings appSettings,
-            ILogger logger
-            ) : base(appSettings, logger)
+        public EndUserManager(
+          IUserRepository userRepository,
+          IAppSettings appSettings,
+          ILogger logger)
+          : base(appSettings, logger)
         {
             _userRepository_ = userRepository;
         }
 
-        public async Task<EndUser> GetAsync(Int32 id)
+        public async Task<Content<EndUser>> GetAsync(Int32 id)
         {
+            var resultContent = new Content<EndUser>();
             try
             {
                 if (id <= 0)
                 {
-                    _logger_.LogError($"Unable to Get user with id {id}");
-                    return null;
+                    var description = $"Unable to Get user with id {id}";
+                    resultContent.AppendError(new ArgumentException(description), null);
+                    _logger_.LogError(description);
                 }
-                var user = await _userRepository_.GetAsync(id);
-                return user;
+                else
+                {
+                    var user = await _userRepository_.GetEntityAsync(id);
+                    if (user == null)
+                        resultContent.AppendError(new KeyNotFoundException(), $"Id {id} not found.");
+                    else
+                        resultContent.SetData(user.ReturnWithoutSensitiveData());
+                }
             }
             catch (Exception e)
             {
-                _logger_.LogError(e, $"Unable to Get user with id {id}");
-                return null;
+                var message = $"Unable to Get user with id {id}";
+                resultContent.AppendError(e, message);
+                _logger_.LogError(e, message);
             }
+            return resultContent;
         }
 
-        private async Task<EndUser> GetAsync(
-            String email,
-            Boolean isHashed = false,
-            Boolean requestOnlyActiveUsers = true)
+        private async Task<Content<EndUser>> GetAsyncWithSensitiveData(
+          String email,
+          Boolean isHashed = false,
+          Boolean requestOnlyActiveUsers = true)
         {
+            var resultContent = new Content<EndUser>();
             try
             {
                 if (String.IsNullOrEmpty(email))
                 {
-                    _logger_.LogError($"Unable to Get user - email null/empty.");
-                    return null;
+                    var message = $"Unable to Get user - email null/empty.";
+                    resultContent.AppendError(new ArgumentNullException(message));
+                    _logger_.LogError(message);
                 }
-                EndUser user;
-                if (isHashed)
-                {
-                    user = await _userRepository_.GetAsync(email, requestOnlyActiveUsers);
-                }
+                EndUser endUser = isHashed
+                    ? await _userRepository_.GetUserWithSensitiveDataAsync(email, requestOnlyActiveUsers)
+                    : await _userRepository_.GetUserWithSensitiveDataAsync(BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret));
+                if (endUser == null)
+                    resultContent.AppendError(new KeyNotFoundException(), $"User with email {email} not found");
                 else
-                {
-                    var hashedEmail = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
-                    user = await _userRepository_.GetAsync(hashedEmail);
-                }
-                return user;
+                    resultContent.SetData(endUser);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger_.LogError(e, $"Unable to Get user with username {email}");
-                return null;
+                var message = "Unable to Get user with username " + email;
+                resultContent.AppendError(ex, message);
+                _logger_.LogError(ex, message);
             }
+            return resultContent;
+        }
+
+        private async Task<Content<EndUser>> GetAsync(
+          String email,
+          Boolean isHashed = false,
+          Boolean requestOnlyActiveUsers = true)
+        {
+            var content = await GetAsync(email, isHashed, requestOnlyActiveUsers);
+            if (!content.HasError)
+                content.Data.ReturnWithoutSensitiveData();
+            return content;
         }
 
         public async Task<IEnumerable<EndUser>> GetAllAsync()
         {
             try
             {
-                var users = await _userRepository_.GetAllAsync();
-                // return users without passwords
+                var users = await _userRepository_.GetAllEntitiesAsync();
                 return users.Select(u => u.ReturnWithoutSensitiveData());
             }
             catch (Exception e)
@@ -99,15 +121,13 @@ namespace MvcFrameworkBll
                     _logger_.LogError($"Unable to add user - some properties are null/empty.");
                     return false;
                 }
-
-                var existingUser = await GetAsync(user.Email, isHashed: false, requestOnlyActiveUsers: false);
+                var existingUser = await GetAsync(user.Email, false, false);
                 if (existingUser != null)
                 {
-                    _logger_.LogError($"Unable to add user - user with same email already exists.");
+                    _logger_.LogError("Unable to add user - user with same email already exists.");
                     return false;
                 }
-
-                var salt = BCrypt.Net.BCrypt.GenerateSalt();
+                var salt = BCrypt.Net.BCrypt.GenerateSalt(SaltRevision.Revision2B);
                 var passwordHashed = BCrypt.Net.BCrypt.HashPassword(user.Password, salt);
                 var emailHashed = BCrypt.Net.BCrypt.HashPassword(user.Email, _appSettings_.Secret);
                 user.Salt = salt;
@@ -116,16 +136,13 @@ namespace MvcFrameworkBll
                 user.DateJoined = DateTime.UtcNow.Date;
                 user.Role = !String.IsNullOrWhiteSpace(user.Role) ? user.Role : Role.USER;
                 user.IsActive = true;
-
-                //todo - send confirmation mail
                 user.EmailConfirmed = true;
-
-                await _userRepository_.AddAsync(user);
+                await _userRepository_.AddEntityAsync(user);
                 return true;
             }
             catch (Exception e)
             {
-                _logger_.LogError(e, $"Unable to Add user.");
+                _logger_.LogError(e, "Unable to Add user.");
                 return false;
             }
         }
@@ -197,7 +214,7 @@ namespace MvcFrameworkBll
                     _logger_.LogError($"Unable to Delete user with id {id}");
                     return false;
                 }
-                return await _userRepository_.DeleteAsync(id);
+                return await _userRepository_.DeleteEntityAsync(id);
             }
             catch (Exception e)
             {
@@ -206,139 +223,148 @@ namespace MvcFrameworkBll
             }
         }
 
-        public async Task<Boolean> ChangeName(Int32 id, String name)
+        //public async Task<Boolean> ChangeName(Int32 id, String name)
+        //{
+        //    try
+        //    {
+        //        if (id <= 0)
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangeName)} of user - id <= 0");
+        //            return false;
+        //        }
+        //        var user = await GetAsync(id);
+        //        if (String.Equals(name, user.Name, StringComparison.InvariantCulture))
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangeName)} of user - new value same as the old one");
+        //            return false;
+        //        }
+        //        user.Name = name;
+        //        await _userRepository_.UpdateAsync(user);
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger_.LogError(e, $"Unable to {nameof(ChangeName)} of user with id {id}");
+        //        return false;
+        //    }
+        //}
+
+        //public async Task<Boolean> ChangeLastName(Int32 id, String lastName)
+        //{
+        //    try
+        //    {
+        //        if (id <= 0)
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangeLastName)} of user - id <= 0");
+        //            return false;
+        //        }
+        //        var user = await GetAsync(id);
+
+        //        if (String.Equals(lastName, user.LastName, StringComparison.InvariantCulture))
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangeLastName)} of user - new value same as the old one");
+        //            return false;
+        //        }
+        //        user.LastName = lastName;
+        //        await _userRepository_.UpdateAsync(user);
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger_.LogError(e, $"Unable to {nameof(ChangeLastName)} of user with id {id}|");
+        //        return false;
+        //    }
+        //}
+
+        //public async Task<Boolean> ChangeEmail(Int32 id, String email)
+        //{
+        //    try
+        //    {
+        //        if (id <= 0)
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangeEmail)} of user - id <= 0");
+        //            return false;
+        //        }
+        //        var user = await GetAsync(id);
+        //        var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
+        //        if (String.Equals(emailHashed, user.Email, StringComparison.InvariantCulture))
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangeEmail)} of user - new value same as the old one");
+        //            return false;
+        //        }
+        //        user.Email = emailHashed;
+        //        await _userRepository_.UpdateAsync(user);
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger_.LogError(e, $"Unable to {nameof(ChangeEmail)} of user with id {id}|");
+        //        return false;
+        //    }
+        //}
+
+        //public async Task<Boolean> ChangePassword(Int32 id, String password)
+        //{
+        //    try
+        //    {
+        //        if (id <= 0)
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangePassword)} of user - id <= 0");
+        //            return false;
+        //        }
+        //        var user = await GetAsync(id);
+        //        var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
+        //        if (String.Equals(encryptedPassword, user.Password, StringComparison.InvariantCulture))
+        //        {
+        //            _logger_.LogError($"Unable to {nameof(ChangePassword)} of user - new value same as the old one");
+        //            return false;
+        //        }
+        //        user.Password = encryptedPassword;
+        //        await _userRepository_.UpdateAsync(user);
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger_.LogError(e, $"Unable to {nameof(ChangePassword)} of user with id {id}|");
+        //        return false;
+        //    }
+        //}
+
+        public async Task<Content<EndUser>> AuthenticateAsync(
+          String email,
+          String password)
         {
+            var resultContent = new Content<EndUser>();
             try
             {
-                if (id <= 0)
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangeName)} of user - id <= 0");
-                    return false;
-                }
-                var user = await GetAsync(id);
-                if (String.Equals(name, user.Name, StringComparison.InvariantCulture))
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangeName)} of user - new value same as the old one");
-                    return false;
-                }
-                user.Name = name;
-                await _userRepository_.UpdateAsync(user);
-                return true;
-            }
-            catch (Exception e)
-            {
-                _logger_.LogError(e, $"Unable to {nameof(ChangeName)} of user with id {id}");
-                return false;
-            }
-        }
-
-        public async Task<Boolean> ChangeLastName(Int32 id, String lastName)
-        {
-            try
-            {
-                if (id <= 0)
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangeLastName)} of user - id <= 0");
-                    return false;
-                }
-                var user = await GetAsync(id);
-
-                if (String.Equals(lastName, user.LastName, StringComparison.InvariantCulture))
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangeLastName)} of user - new value same as the old one");
-                    return false;
-                }
-                user.LastName = lastName;
-                await _userRepository_.UpdateAsync(user);
-                return true;
-            }
-            catch (Exception e)
-            {
-                _logger_.LogError(e, $"Unable to {nameof(ChangeLastName)} of user with id {id}|");
-                return false;
-            }
-        }
-
-        public async Task<Boolean> ChangeEmail(Int32 id, String email)
-        {
-            try
-            {
-                if (id <= 0)
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangeEmail)} of user - id <= 0");
-                    return false;
-                }
-                var user = await GetAsync(id);
                 var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
-                if (String.Equals(emailHashed, user.Email, StringComparison.InvariantCulture))
+                var dbContent = await GetAsyncWithSensitiveData(emailHashed, true);
+                if (dbContent.HasError)
                 {
-                    _logger_.LogError($"Unable to {nameof(ChangeEmail)} of user - new value same as the old one");
-                    return false;
+                    resultContent.AppendError(dbContent);
+                    _logger_.LogError(resultContent.Errors.Last()?.Exception, resultContent.Errors.Last()?.Description);
                 }
-                user.Email = emailHashed;
-                await _userRepository_.UpdateAsync(user);
-                return true;
+                else
+                {
+                    var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password, dbContent.Data.Salt);
+                    var isAuthenticated = await _userRepository_.TryAuthenticateAsync(emailHashed, passwordHashed);
+                    if (!isAuthenticated)
+                    {
+                        var message = $"User with email {email} not authenticated";
+                        resultContent.AppendError(new KeyNotFoundException(), message);
+                        _logger_.LogError(message);
+                    }
+                    else
+                        resultContent.SetData(dbContent.Data.ReturnWithoutSensitiveData());
+                }
             }
             catch (Exception e)
             {
-                _logger_.LogError(e, $"Unable to {nameof(ChangeEmail)} of user with id {id}|");
-                return false;
+                var message = $"Unable to authenticate user with email {email}";
+                resultContent.AppendError(e, message);
+                _logger_.LogError(e, message);
             }
-        }
-
-        public async Task<Boolean> ChangePassword(Int32 id, String password)
-        {
-            try
-            {
-                if (id <= 0)
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangePassword)} of user - id <= 0");
-                    return false;
-                }
-                var user = await GetAsync(id);
-                var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
-                if (String.Equals(encryptedPassword, user.Password, StringComparison.InvariantCulture))
-                {
-                    _logger_.LogError($"Unable to {nameof(ChangePassword)} of user - new value same as the old one");
-                    return false;
-                }
-                user.Password = encryptedPassword;
-                await _userRepository_.UpdateAsync(user);
-                return true;
-            }
-            catch (Exception e)
-            {
-                _logger_.LogError(e, $"Unable to {nameof(ChangePassword)} of user with id {id}|");
-                return false;
-            }
-        }
-
-        public async Task<EndUser> AuthenticateAsync(String email, String password)
-        {
-            try
-            {
-                var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
-                var user = await GetAsync(emailHashed, true);
-
-                if (user == null)
-                {
-                    _logger_.LogError($"User with email {email} not found");
-                    return null;
-                }
-                var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password, user.Salt);
-                if (!(await _userRepository_.TryAuthenticateAsync(emailHashed, passwordHashed)))
-                {
-                    _logger_.LogError($"User with email {email} not authenticated");
-                    return null;
-                }
-                // remove sensitive data before returning
-                return user.ReturnWithoutSensitiveData();
-            }
-            catch (Exception e)
-            {
-                _logger_.LogError(e, $"Unable to authenticate user with email {email}");
-                return null;
-            }
+            return resultContent;
         }
     }
 }
