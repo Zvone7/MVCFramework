@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MvcFrameworkBll
+namespace MvcFrameworkBll.Managers
 {
     public class EndUserManager : CustomBaseLogicManager
     {
@@ -24,7 +24,7 @@ namespace MvcFrameworkBll
             _userRepository_ = userRepository;
         }
 
-        public async Task<Content<EndUser>> GetAsync(Int32 id)
+        public async Task<Content<EndUser>> GetAsync(int id)
         {
             var resultContent = new Content<EndUser>();
             try
@@ -54,14 +54,14 @@ namespace MvcFrameworkBll
         }
 
         private async Task<Content<EndUser>> GetAsyncWithSensitiveData(
-          String email,
-          Boolean isHashed = false,
-          Boolean requestOnlyActiveUsers = true)
+          string email,
+          bool isHashed = false,
+          bool requestOnlyActiveUsers = true)
         {
             var resultContent = new Content<EndUser>();
             try
             {
-                if (String.IsNullOrEmpty(email))
+                if (string.IsNullOrEmpty(email))
                 {
                     var message = $"Unable to Get user - email null/empty.";
                     resultContent.AppendError(new ArgumentNullException(message));
@@ -85,9 +85,9 @@ namespace MvcFrameworkBll
         }
 
         private async Task<Content<EndUser>> GetAsync(
-          String email,
-          Boolean isHashed = false,
-          Boolean requestOnlyActiveUsers = true)
+          string email,
+          bool isHashed = false,
+          bool requestOnlyActiveUsers = true)
         {
             var content = await GetAsync(email, isHashed, requestOnlyActiveUsers);
             if (!content.HasError)
@@ -109,14 +109,14 @@ namespace MvcFrameworkBll
             }
         }
 
-        public async Task<Boolean> AddAsync(EndUser user)
+        public async Task<bool> AddAsync(EndUser user)
         {
             try
             {
-                if (String.IsNullOrEmpty(user.Password) ||
-                    String.IsNullOrEmpty(user.Email) ||
-                    String.IsNullOrEmpty(user.LastName) ||
-                    String.IsNullOrEmpty(user.Name))
+                if (string.IsNullOrEmpty(user.Password) ||
+                    string.IsNullOrEmpty(user.Email) ||
+                    string.IsNullOrEmpty(user.LastName) ||
+                    string.IsNullOrEmpty(user.Name))
                 {
                     _logger_.LogError($"Unable to add user - some properties are null/empty.");
                     return false;
@@ -134,7 +134,7 @@ namespace MvcFrameworkBll
                 user.Password = passwordHashed;
                 user.Email = emailHashed;
                 user.DateJoined = DateTime.UtcNow.Date;
-                user.Role = !String.IsNullOrWhiteSpace(user.Role) ? user.Role : Role.USER;
+                user.Role = !string.IsNullOrWhiteSpace(user.Role) ? user.Role : Role.USER;
                 user.IsActive = true;
                 user.EmailConfirmed = true;
                 await _userRepository_.AddEntityAsync(user);
@@ -205,7 +205,7 @@ namespace MvcFrameworkBll
         //    }
         //}
 
-        public async Task<Boolean> DeleteAsync(Int32 id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
@@ -331,8 +331,8 @@ namespace MvcFrameworkBll
         //}
 
         public async Task<Content<EndUser>> AuthenticateAsync(
-          String email,
-          String password)
+          string email,
+          string password)
         {
             var resultContent = new Content<EndUser>();
             try

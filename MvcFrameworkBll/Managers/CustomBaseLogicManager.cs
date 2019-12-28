@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MvcFrameworkCml.Infrastructure;
 
-namespace MvcFrameworkBll
+namespace MvcFrameworkBll.Managers
 {
     public class CustomBaseLogicManager
     {

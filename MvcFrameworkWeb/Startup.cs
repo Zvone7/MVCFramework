@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MvcFrameworkBll;
+using MvcFrameworkBll.Managers;
 using MvcFrameworkCml.Infrastructure.Repository;
 using MvcFrameworkCml.Startup;
 using MvcFrameworkDbl;

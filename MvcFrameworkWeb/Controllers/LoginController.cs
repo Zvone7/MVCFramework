@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MvcFrameworkBll;
+using MvcFrameworkBll.Managers;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Transfer;
 using MvcFrameworkCml.ViewModels;
