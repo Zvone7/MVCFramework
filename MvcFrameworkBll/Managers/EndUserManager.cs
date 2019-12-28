@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkCml.Infrastructure.Managers;
 using MvcFrameworkCml.Infrastructure.Repository;
 using MvcFrameworkCml.Transfer;
 using System;
@@ -11,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace MvcFrameworkBll.Managers
 {
-    public class EndUserManager : CustomBaseLogicManager
+    public class EndUserManager : CustomBaseLogicManager, IEndUserManager
     {
-        private readonly IUserRepository _userRepository_;
+        private readonly IEndUserRepository _userRepository_;
 
         public EndUserManager(
-          IUserRepository userRepository,
+          IEndUserRepository userRepository,
           IAppSettings appSettings,
           ILogger logger)
           : base(appSettings, logger)
@@ -24,7 +25,15 @@ namespace MvcFrameworkBll.Managers
             _userRepository_ = userRepository;
         }
 
-        public async Task<Content<EndUser>> GetAsync(int id)
+        public async Task<Content<EndUser>> GetEntityAsync(int id)
+        {
+            var content = await GetUserWithSensitiveDataAsync(id);
+            if (!content.HasError)
+                content.Data.ReturnWithoutSensitiveData();
+            return content;
+        }
+
+        private async Task<Content<EndUser>> GetUserWithSensitiveDataAsync(int id)
         {
             var resultContent = new Content<EndUser>();
             try
@@ -41,7 +50,7 @@ namespace MvcFrameworkBll.Managers
                     if (user == null)
                         resultContent.AppendError(new KeyNotFoundException(), $"Id {id} not found.");
                     else
-                        resultContent.SetData(user.ReturnWithoutSensitiveData());
+                        resultContent.SetData(user);
                 }
             }
             catch (Exception e)
@@ -51,9 +60,21 @@ namespace MvcFrameworkBll.Managers
                 _logger_.LogError(e, message);
             }
             return resultContent;
+
         }
 
-        private async Task<Content<EndUser>> GetAsyncWithSensitiveData(
+        public async Task<Content<EndUser>> GetUserAsync(
+          string email,
+          bool isHashed = false,
+          bool requestOnlyActiveUsers = true)
+        {
+            var content = await GetUserAsync(email, isHashed, requestOnlyActiveUsers);
+            if (!content.HasError)
+                content.Data.ReturnWithoutSensitiveData();
+            return content;
+        }
+
+        private async Task<Content<EndUser>> GetUserWithSensitiveDataAsync(
           string email,
           bool isHashed = false,
           bool requestOnlyActiveUsers = true)
@@ -84,18 +105,7 @@ namespace MvcFrameworkBll.Managers
             return resultContent;
         }
 
-        private async Task<Content<EndUser>> GetAsync(
-          string email,
-          bool isHashed = false,
-          bool requestOnlyActiveUsers = true)
-        {
-            var content = await GetAsync(email, isHashed, requestOnlyActiveUsers);
-            if (!content.HasError)
-                content.Data.ReturnWithoutSensitiveData();
-            return content;
-        }
-
-        public async Task<IEnumerable<EndUser>> GetAllAsync()
+        public async Task<IEnumerable<EndUser>> GetAllEntitiesAsync()
         {
             try
             {
@@ -109,7 +119,7 @@ namespace MvcFrameworkBll.Managers
             }
         }
 
-        public async Task<bool> AddAsync(EndUser user)
+        public async Task<bool> AddEntityAsync(EndUser user)
         {
             try
             {
@@ -121,7 +131,7 @@ namespace MvcFrameworkBll.Managers
                     _logger_.LogError($"Unable to add user - some properties are null/empty.");
                     return false;
                 }
-                var existingUser = await GetAsync(user.Email, false, false);
+                var existingUser = await GetUserAsync(user.Email, false, false);
                 if (existingUser != null)
                 {
                     _logger_.LogError("Unable to add user - user with same email already exists.");
@@ -205,7 +215,7 @@ namespace MvcFrameworkBll.Managers
         //    }
         //}
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteEntityAsync(int id)
         {
             try
             {
@@ -338,7 +348,7 @@ namespace MvcFrameworkBll.Managers
             try
             {
                 var emailHashed = BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret);
-                var dbContent = await GetAsyncWithSensitiveData(emailHashed, true);
+                var dbContent = await GetUserWithSensitiveDataAsync(emailHashed, true);
                 if (dbContent.HasError)
                 {
                     resultContent.AppendError(dbContent);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MvcFrameworkCml.Infrastructure.Repository
 {
-    public interface IDataRepository<TEntity>
+    public interface IRepository<TEntity>
     {
         Task<IEnumerable<TEntity>> GetAllEntitiesAsync();
         Task<TEntity> GetEntityAsync(Int32 id, Boolean mustBeActive = true);

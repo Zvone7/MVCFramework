@@ -28,7 +28,7 @@ namespace MvcFrameworkWeb.Controllers
         [Authorize(Roles = Role.Access.MUST_BE_ADMIN)]
         public async Task<ActionResult<Content<EndUser>>> GetUserById([FromUri]Int32 id)
         {
-            return await _endUserManager_.GetAsync(id);
+            return await _endUserManager_.GetEntityAsync(id);
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
@@ -37,7 +37,7 @@ namespace MvcFrameworkWeb.Controllers
             var result = new Content<EndUser>();
             var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
             if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
-                result = await _endUserManager_.GetAsync(id);
+                result = await _endUserManager_.GetEntityAsync(id);
             else
                 result.AppendError(new ArgumentNullException(), "Id not found");
 
@@ -48,7 +48,7 @@ namespace MvcFrameworkWeb.Controllers
         public async Task<ActionResult<Boolean>> Add([FromBody]EndUser user)
         {
             user.Id = 0;
-            return await _endUserManager_.AddAsync(user);
+            return await _endUserManager_.AddEntityAsync(user);
         }
 
         //[Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]

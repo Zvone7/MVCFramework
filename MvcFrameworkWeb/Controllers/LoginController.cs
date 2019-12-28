@@ -82,7 +82,7 @@ namespace MvcFrameworkWeb.Controllers
 
         private async Task CreateAdminUser()
         {
-            await _userLogicManager_.AddAsync(
+            await _userLogicManager_.AddEntityAsync(
                 new EndUser()
                 {
                     Email = "admin@mail.com",

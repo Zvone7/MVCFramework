@@ -69,9 +69,9 @@ namespace MvcFrameworkWeb
                 // DI
                 services.AddScoped(x => new ControllerHelper());
                 services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
-                services.AddScoped<IUserRepository, UserRepository>();
+                services.AddScoped<IEndUserRepository, EndUserRepository>();
                 services.AddScoped(x => new EndUserManager(
-                    x.GetService<IUserRepository>(),
+                    x.GetService<IEndUserRepository>(),
                     appSettings,
                     x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));
             }

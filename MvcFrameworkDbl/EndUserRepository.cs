@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace MvcFrameworkDbl
 {
-    public class UserRepository : IUserRepository
+    public class EndUserRepository : IEndUserRepository
     {
         private readonly IAppSettings appSettings;
 
-        public UserRepository(IAppSettings appSettings)
+        public EndUserRepository(IAppSettings appSettings)
         {
             this.appSettings = appSettings;
         }

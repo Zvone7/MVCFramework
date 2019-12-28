@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace MvcFrameworkCml.Infrastructure.Repository
 {
-    public interface IUserRepository : IDataRepository<EndUser>
+    public interface IEndUserRepository : IRepository<EndUser>
     {
         Task<bool> TryAuthenticateAsync(String email, String password);
 
