@@ -100,7 +100,7 @@ namespace MvcFrameworkBll
                     return false;
                 }
 
-                var existingUser = GetAsync(user.Email, isHashed: false, requestOnlyActiveUsers: false);
+                var existingUser = await GetAsync(user.Email, isHashed: false, requestOnlyActiveUsers: false);
                 if (existingUser != null)
                 {
                     _logger_.LogError($"Unable to add user - user with same email already exists.");
@@ -118,6 +118,8 @@ namespace MvcFrameworkBll
                 user.IsActive = true;
 
                 //todo - send confirmation mail
+                user.EmailConfirmed = true;
+
                 await _userRepository_.AddAsync(user);
                 return true;
             }

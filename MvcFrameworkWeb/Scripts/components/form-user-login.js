@@ -35,7 +35,7 @@ export var formUserLogin = Vue.component('form-user-login',
                     console.log("__Login called: ", data);
                     this.$refs.LoginButton.setAttribute("disabled", "disabled");
                     var response = data.data.toString();
-                    if (response != undefined && response.email!== "") {
+                    if (response != undefined && response.email !== "") {
                         this.$notify({
                             type: 'success',
                             text: 'Logged in succesfully. Redirecting...'

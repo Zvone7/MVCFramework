@@ -4,4 +4,3 @@ unify requests (receive and send) - better error messages
 spinner for loading
 password complexity
 confirmation mail
-register not working?
