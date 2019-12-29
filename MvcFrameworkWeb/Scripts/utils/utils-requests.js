@@ -183,7 +183,7 @@ export var processContentUserUpdateUserPassword = function (context, data) {
             for (var i = 0; i < data.data.errors.length; i++) {
                 lastMessage = data.data.errors[i].description;
             }
-            this.$notify({
+            context.$notify({
                 type: 'error',
                 text: lastMessage
             });

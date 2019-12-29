@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { validateEmail, validatePasswordComplexity } from '../utils/utils-general';
 import {
     processContentUserMe,
     processContentUserUpdateUser,
@@ -44,7 +45,7 @@ export var formUserEdit = Vue.component('form-user-edit',
                 if (
                     this.Email !== '' &&
                     this.EmailAgain !== '' &&
-                    this.Email === this.EmailAgain
+                    this.Email === this.EmailAgain 
                 ) {
                     isDisabled = false;
                 }
@@ -84,35 +85,39 @@ export var formUserEdit = Vue.component('form-user-edit',
             },
             // update email ------------------------------------------------------
             UpdateEmail() {
-                axiosInstance({
-                    method: 'post',
-                    url: '/User/UpdateUserEmail',
-                    data: { Email: this.$data.Email }
-                }).then(data => {
-                    processContentUserUpdateUserEmail(this, data);
-                }).catch(err => {
-                    this.$notify({
-                        type: 'error',
-                        text: "Fail." + err
+                if (validateEmail(this, this.$data.Email)) {
+                    axiosInstance({
+                        method: 'post',
+                        url: '/User/UpdateUserEmail',
+                        data: { Email: this.$data.Email }
+                    }).then(data => {
+                        processContentUserUpdateUserEmail(this, data);
+                    }).catch(err => {
+                        this.$notify({
+                            type: 'error',
+                            text: "Fail." + err
+                        });
                     });
-                });
-                this.$refs.UpdateEmailButton.setAttribute("disabled", "disabled");
+                    this.$refs.UpdateEmailButton.setAttribute("disabled", "disabled");
+                }
             },
             // update password ---------------------------------------------------------------------------------
             UpdatePassword() {
-                axiosInstance({
-                    method: 'post',
-                    url: '/User/UpdateUserPassword',
-                    data: { Password: this.$data.Password }
-                }).then(data => {
-                    processContentUserUpdateUserPassword(this, data);
-                }).catch(err => {
-                    this.$notify({
-                        type: 'error',
-                        text: "Fail." + err
+                if (validatePasswordComplexity(this, this.$data.Password)) {
+                    axiosInstance({
+                        method: 'post',
+                        url: '/User/UpdateUserPassword',
+                        data: { Password: this.$data.Password }
+                    }).then(data => {
+                        processContentUserUpdateUserPassword(this, data);
+                    }).catch(err => {
+                        this.$notify({
+                            type: 'error',
+                            text: "Fail." + err
+                        });
                     });
-                });
-                this.$refs.UpdatePasswordButton.setAttribute("disabled", "disabled");
+                    this.$refs.UpdatePasswordButton.setAttribute("disabled", "disabled");
+                }
             },
             // ------------------------------------------------------------------------------------------------------------
             async getUserData() {
@@ -164,7 +169,15 @@ export var formUserEdit = Vue.component('form-user-edit',
 
                         <label><b>Change password</b></label>
                         <br>
-
+                        <i>
+                            <label>password should contain</label>
+                            <ul>
+                              <li>at least 8 characters</li>
+                              <li>at least one lower-case letter</li>
+                              <li>at least one upper-case letter</li>
+                              <li>at least one number</li>
+                            </ul>
+                        </i>
                         <input type="password" placeholder="Enter password" v-model="Password" autocomplete="new-password" required>
                         <input type="password" placeholder="Enter password again" v-model="PasswordAgain" autocomplete="new-password" required>
 

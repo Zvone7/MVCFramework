@@ -1,4 +1,3 @@
 spinner for loading
-password complexity
 confirmation mail
-change hashpassword for email to be hashstring ?
+trim all inputs

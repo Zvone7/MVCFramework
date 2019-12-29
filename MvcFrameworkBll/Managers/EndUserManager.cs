@@ -8,6 +8,7 @@ using MvcFrameworkCml.Transfer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MvcFrameworkBll.Managers
@@ -135,6 +136,10 @@ namespace MvcFrameworkBll.Managers
                     string message = $"Unable to add user - some properties are null/empty.";
                     resultContent.AppendError(new ArgumentNullException(), message);
                     _logger_.LogError(message);
+                }
+                else if (!PasswordFollowsComplexityRules(resultContent, user.Password))
+                {
+                    _logger_.LogError($"Password not complex enough.");
                 }
                 else
                 {
@@ -300,6 +305,10 @@ namespace MvcFrameworkBll.Managers
                     resultContent.AppendError(new ArgumentException(), message);
                     _logger_.LogError(message);
                 }
+                else if (!PasswordFollowsComplexityRules(resultContent, newPassword))
+                {
+                    _logger_.LogError($"Password not complex enough.");
+                }
                 else
                 {
                     var userContent = await GetUserWithSensitiveDataAsync(id);
@@ -367,6 +376,30 @@ namespace MvcFrameworkBll.Managers
                 _logger_.LogError(e, message);
             }
             return resultContent;
+        }
+
+        private Boolean PasswordFollowsComplexityRules<T>(Content<T> content, String password)
+        {
+            if (password.Length < _appSettings_.PasswordComplexitySettings.MinimumLength)
+            {
+                var message = $"Password must contain at least {_appSettings_.PasswordComplexitySettings.MinimumLength} characters long.";
+                content.AppendError(new ArgumentException(), message);
+                _logger_.LogError(message);
+                return false;
+            }
+            foreach (var rule in _appSettings_.PasswordComplexitySettings.Rules)
+            {
+                var regex = new Regex(rule.Regex);
+                var match = regex.Match(password);
+
+                if (!match.Success)
+                {
+                    content.AppendError(new ArgumentException(), $"{rule.Name}");
+                    _logger_.LogError($"{rule.Name}");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
