@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkBll.Managers;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.Transfer;
 using MvcFrameworkWeb.Services;
 using System;
@@ -19,8 +20,9 @@ namespace MvcFrameworkWeb.Controllers
         public UserController(
             EndUserManager userLogicManager,
             ControllerHelper controllerHelper,
+            IAppSettings appSettings,
             ILogger logger
-            ) : base(controllerHelper, logger)
+            ) : base(controllerHelper, appSettings, logger)
         {
             _endUserManager_ = userLogicManager;
         }

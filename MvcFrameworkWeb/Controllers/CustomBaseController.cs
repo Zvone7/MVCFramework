@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System;
@@ -13,11 +14,13 @@ namespace MvcFrameworkWeb.Controllers
     {
 
         protected readonly ControllerHelper _controllerHelper_;
+        protected readonly IAppSettings _appSettings_;
         protected readonly ILogger _logger_;
 
-        public CustomBaseController(ControllerHelper controllerHelper, ILogger logger)
+        public CustomBaseController(ControllerHelper controllerHelper, IAppSettings appSettings, ILogger logger)
         {
             _controllerHelper_ = controllerHelper;
+            this._appSettings_ = appSettings;
             _logger_ = logger;
         }
 

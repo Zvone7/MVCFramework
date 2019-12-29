@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkWeb.Services;
 using System;
 using System.Collections.Generic;
@@ -17,8 +18,9 @@ namespace MvcFrameworkWeb.Controllers
     {
         public TestController(
             ControllerHelper controllerHelper,
+            IAppSettings appSettings,
             ILogger logger
-            ) : base(controllerHelper, logger) { }
+            ) : base(controllerHelper, appSettings, logger) { }
 
         [System.Web.Http.HttpGet]
         public ActionResult<Int32> Testing()

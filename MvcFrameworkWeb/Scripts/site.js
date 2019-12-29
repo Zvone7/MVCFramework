@@ -1,7 +1,7 @@
 import { requestLogOut } from './utils/utils-requests'
 
 import { formUserLogin } from './components/form-user-login';
-import { formUserAdd } from './components/form-user-add';
+import { formUserRegister } from './components/form-user-register';
 import { formUserEdit } from './components/form-user-edit';
 import { formTest } from './components/form-test';
 import Notification from 'vue-notification';
@@ -22,7 +22,7 @@ new Vue(
         components: {
             'form-test': formTest,
             'form-user-login': formUserLogin,
-            'form-user-add': formUserAdd,
+            'form-user-register': formUserRegister,
             'form-user-edit': formUserEdit
         },
         data: {},

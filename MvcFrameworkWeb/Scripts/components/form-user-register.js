@@ -2,7 +2,7 @@ import { validateEmail } from '../utils/utils-general';
 import { processContentUserRegister } from '../utils/utils-requests'
 import axios from 'axios';
 
-export var formUserAdd = Vue.component('form-user-add',
+export var formUserRegister = Vue.component('form-user-register',
     {
         data: function () {
             return {

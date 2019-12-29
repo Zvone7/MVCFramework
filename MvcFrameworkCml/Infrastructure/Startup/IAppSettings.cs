@@ -7,6 +7,7 @@ namespace MvcFrameworkCml.Infrastructure
     {
         String Secret { get; set; }
         String ConnectionString { get; set; }
+        Int32 CookieExpirePeriodInMins { get; set; }
         LoggingSettings LoggingSettings { get; set; }
     }
 }

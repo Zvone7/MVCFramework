@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System.Diagnostics;
@@ -13,8 +14,9 @@ namespace MvcFrameworkWeb.Controllers
     {
         public HomeController(
             ControllerHelper controllerHelper,
+            IAppSettings appSettings,
             ILogger logger
-            ) : base(controllerHelper, logger) { }
+            ) : base(controllerHelper, appSettings, logger) { }
 
         public IActionResult Index()
         {

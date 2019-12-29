@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkBll.Managers;
 using MvcFrameworkCml;
+using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.Transfer;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
@@ -18,11 +19,13 @@ namespace MvcFrameworkWeb.Controllers
     public class LoginController : CustomBaseController
     {
         private readonly EndUserManager _userLogicManager_;
+
         public LoginController(
             EndUserManager userLogicManager,
             ControllerHelper controllerHelper,
+            IAppSettings appSettings,
             ILogger logger
-            ) : base(controllerHelper, logger)
+            ) : base(controllerHelper, appSettings, logger)
         {
             _userLogicManager_ = userLogicManager;
         }
@@ -49,7 +52,7 @@ namespace MvcFrameworkWeb.Controllers
                     AllowRefresh = false,
 
                     //todo move to config
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(_appSettings_.CookieExpirePeriodInMins),
 
                     IsPersistent = true
                 };

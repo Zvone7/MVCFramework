@@ -1,12 +1,4 @@
-unify requests (receive and send) - better error messages
-	one type from BLL
-	one type from DB
 spinner for loading
 password complexity
 confirmation mail
-update name,last name - one method
-update password - one method
-update email - one method
-change hashpassword for email to be hashstring
-cookie config on login controller should come from settings
-rename add to register
+change hashpassword for email to be hashstring ?
