@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {processContentLoginLogin} from '../utils/utils-requests'
 
 export var formUserLogin = Vue.component('form-user-login',
     {
@@ -32,25 +33,7 @@ export var formUserLogin = Vue.component('form-user-login',
                         Password: this.$data.Password
                     }
                 }).then(data => {
-                    console.log("__Login called: ", data);
-                    this.$refs.LoginButton.setAttribute("disabled", "disabled");
-                    var response = data.data.toString();
-                    if (response != undefined && response.email !== "") {
-                        this.$notify({
-                            type: 'success',
-                            text: 'Logged in succesfully. Redirecting...'
-                        });
-                        setTimeout(function () {
-                            window.location.href = '/';
-                        }, 1000);
-                    }
-                    else {
-                        this.$notify({
-                            type: 'error',
-                            text: 'Invalid login data combination.'
-                        });
-
-                    }
+                    processContentLoginLogin(this, data);
                 }).catch(err => {
                     this.$notify({
                         type: 'error',

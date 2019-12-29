@@ -1,14 +1,16 @@
 ﻿using MvcFrameworkCml.Transfer;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MvcFrameworkCml.Infrastructure.Managers
 {
-    public interface IManager
+    public interface IManager<T>
     {
-        Task<bool> AddEntityAsync(EndUser user);
-        Task<bool> DeleteEntityAsync(int id);
-        Task<IEnumerable<EndUser>> GetAllEntitiesAsync();
+        Task<Content<Boolean>> AddEntityAsync(T entity);
+        Task<Content<Boolean>> UpdateEntityAsync(T entity);
+        Task<Content<Boolean>> DeleteEntityAsync(int id);
+        Task<Content<IEnumerable<EndUser>>> GetAllEntitiesAsync();
         Task<Content<EndUser>> GetEntityAsync(int id);
     }
 }

@@ -9,8 +9,8 @@ namespace MvcFrameworkCml.Infrastructure.Repository
     {
         Task<IEnumerable<TEntity>> GetAllEntitiesAsync();
         Task<TEntity> GetEntityAsync(Int32 id, Boolean mustBeActive = true);
-        Task AddEntityAsync(TEntity entity);
-        Task UpdateEntityAsync(TEntity entity);
+        Task<Boolean> AddEntityAsync(TEntity entity);
+        Task<Boolean> UpdateEntityAsync(TEntity entity);
         Task<Boolean> DeleteEntityAsync(int id);
     }
 }

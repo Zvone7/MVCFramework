@@ -30,7 +30,7 @@ namespace MvcFrameworkWeb.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Content<EndUser>>> LogIn([FromBody]UserLoginData userLogin)
         {
-            var content = await _userLogicManager_.AuthenticateAsync(userLogin.Email, userLogin.Password);
+            var content = await _userLogicManager_.AuthenticateUserAsync(userLogin.Email, userLogin.Password);
             if (!content.HasError)
             {
                 var claims = new List<Claim>

@@ -22,11 +22,18 @@ namespace MvcFrameworkCml.Transfer
             if (description == default) description = e.Message;
             Errors.Add(new ContentError(e, description));
         }
+
         public void AppendError(Content<T> content)
         {
             HasError = true;
             if (Errors == null) Errors = new List<ContentError>();
             Errors.AddRange(content.Errors);
+        }
+        public void AppendError(List<ContentError> errors)
+        {
+            HasError = true;
+            if (Errors == null) Errors = new List<ContentError>();
+            Errors.AddRange(errors);
         }
 
         public void SetData(T data)

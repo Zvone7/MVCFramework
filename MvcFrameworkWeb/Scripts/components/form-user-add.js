@@ -1,4 +1,5 @@
 import { validateEmail } from '../utils/utils-general';
+import { processContentUserRegister } from '../utils/utils-requests'
 import axios from 'axios';
 
 export var formUserAdd = Vue.component('form-user-add',
@@ -11,18 +12,6 @@ export var formUserAdd = Vue.component('form-user-add',
                 Email: '',
                 Password: '',
                 PasswordAgain: ''
-            }
-        },
-        created: function () {
-            var userData;
-            var userData = this.getUserData();
-            if (userData.id > 0) {
-                this.Id = userData.id;
-                this.Name = userData.name;
-                this.LastName = userData.lastName;
-                this.Email = userData.email;
-                this.Password = '';
-                this.PasswordAgain = '';
             }
         },
         computed: {
@@ -55,12 +44,11 @@ export var formUserAdd = Vue.component('form-user-add',
 
                 axios({
                     method: 'post',
-                    url: '/User/Add',
+                    url: '/User/RegisterSelf',
                     data: EndUser
 
                 }).then(data => {
-                    console.log("__User_Add: ", data.data);
-                    this.$refs.SubmitButton.setAttribute("disabled", "disabled");
+                    processContentUserRegister(this, data);
 
                 }).catch(err => {
                     alert(`There was an error submitting user. See details: ${err}`);
@@ -72,9 +60,6 @@ export var formUserAdd = Vue.component('form-user-add',
                 this.Name = '';
                 this.LastName = '';
                 this.Password = '';
-            },
-            getUserData() {
-                return null;
             }
         },
         template: `<div>

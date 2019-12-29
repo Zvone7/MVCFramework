@@ -21,6 +21,8 @@ namespace MvcFrameworkDbl
 
         #region SQL_HELPERS
 
+        const string USER_TABLE = "[TestDb].[dbo].[User]";
+
         private String GetSelectUserSql(
             Int32 id = 0,
             String email = default,
@@ -39,7 +41,7 @@ namespace MvcFrameworkDbl
                 $",[EmailConfirmed]" +
                 $",[IsActive]" +
                 $",[DateJoined]" +
-                $"FROM [TestDb].[dbo].[User]";
+                $"FROM {USER_TABLE}";
             if (id > 0)
             {
                 sql += $" WHERE [Id] = {id}";
@@ -64,7 +66,7 @@ namespace MvcFrameworkDbl
         private String GetInsertUserSql(EndUser user)
         {
             return
-                $"INSERT INTO [TestDb].[dbo].[User]" +
+                $"INSERT INTO {USER_TABLE}" +
                 $"([Name],[LastName]," +
                 $"[Email],[Password]," +
                 $"[Salt],[Role]," +
@@ -81,24 +83,42 @@ namespace MvcFrameworkDbl
         private String GetUpdateUserSql(EndUser user)
         {
             return
-                $"UPDATE [TestDb].[dbo].[User]" +
+                $"UPDATE {USER_TABLE}" +
                 $" SET" +
                 $"[Name] = '{user.Name}'" +
                 $",[LastName]= '{user.LastName}'" +
-                $",[Email]= '{user.Email}'" +
-                $",[Password]= '{user.Password}'" +
-                $",[Salt]= '{user.Salt}'" +
-                $",[Role]= '{user.Role}'" +
-                $",[EmailConfirmed]= '{user.EmailConfirmed}'" +
-                $",[IsActive]= '{user.IsActive}'" +
-                $",[DateJoined]= '{user.DateJoined.Value.ToString("yyyy-MM-dd HH:mm:ss.fff")}'" +
-                $"WHERE Id = {user.Id}";
+                //$",[Email]= '{user.Email}'" +
+                //$",[Password]= '{user.Password}'" +
+                //$",[Salt]= '{user.Salt}'" +
+                //$",[Role]= '{user.Role}'" +
+                //$",[EmailConfirmed]= '{user.EmailConfirmed}'" +
+                //$",[IsActive]= '{user.IsActive}'" +
+                //$",[DateJoined]= '{user.DateJoined.Value.ToString("yyyy-MM-dd HH:mm:ss.fff")}'" +
+                $" WHERE Id = {user.Id}";
+        }
+
+        private String GetUpdateUserEmailSql(Int32 id, String email)
+        {
+            return
+                $"UPDATE {USER_TABLE}" +
+                $" SET" +
+                $"[Email]= '{email}'" +
+                $" WHERE Id = {id}";
+        }
+
+        private String GetUpdateUserPasswordSql(Int32 id, String password)
+        {
+            return
+                $"UPDATE {USER_TABLE}" +
+                $" SET" +
+                $"[Password]= '{password}'" +
+                $" WHERE Id = {id}";
         }
 
         private String GetDeleteUserSql(Int32 id)
         {
             return
-                $"UPDATE [TestDb].[dbo].[User]" +
+                $"UPDATE {USER_TABLE}" +
                 $" SET" +
                 $"[IsActive]= '{false}'" +
                 $"WHERE Id = {id}";
@@ -106,13 +126,14 @@ namespace MvcFrameworkDbl
 
         #endregion
 
-        public async Task AddEntityAsync(EndUser user)
+        public async Task<Boolean> AddEntityAsync(EndUser user)
         {
             var sql = $"{GetInsertUserSql(user)}";
 
             using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
                 var result = await connection.ExecuteAsync(sql);
+                return result > 0;
             }
         }
 
@@ -187,14 +208,39 @@ namespace MvcFrameworkDbl
             }
         }
 
-        public async Task UpdateEntityAsync(EndUser user)
+        public async Task<Boolean> UpdateEntityAsync(EndUser user)
         {
             var sql = $"{GetUpdateUserSql(user)}";
 
             using (var connection = new SqlConnection(appSettings.ConnectionString))
             {
                 var result = await connection.ExecuteAsync(sql);
+                return result > 0;
             }
+        }
+
+        public async Task<Boolean> UpdateUserEmailAsync(Int32 id, String email)
+        {
+            var sql = $"{GetUpdateUserEmailSql(id, email)}";
+
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
+            {
+                var result = await connection.ExecuteAsync(sql);
+                return result > 0;
+            }
+
+        }
+
+        public async Task<Boolean> UpdateUserPasswordAsync(Int32 id, String password)
+        {
+            var sql = $"{GetUpdateUserPasswordSql(id, password)}";
+
+            using (var connection = new SqlConnection(appSettings.ConnectionString))
+            {
+                var result = await connection.ExecuteAsync(sql);
+                return result > 0;
+            }
+
         }
     }
 }

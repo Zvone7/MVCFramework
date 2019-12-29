@@ -45,47 +45,67 @@ namespace MvcFrameworkWeb.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<ActionResult<Boolean>> Add([FromBody]EndUser user)
+        public async Task<ActionResult<Content<Boolean>>> RegisterSelf([FromBody]EndUser user)
         {
             user.Id = 0;
-            return await _endUserManager_.AddEntityAsync(user);
+            var result = await _endUserManager_.AddEntityAsync(user);
+            return result;
         }
 
-        //[Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        //public async Task<ActionResult<Boolean>> ChangeName([FromBody]RequestData<String> name)
-        //{
-        //    var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
-        //    if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
-        //        return await _userLogicManager_.ChangeName(id, name.Data);
-        //    return false;
-        //}
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public async Task<ActionResult<Content<Boolean>>> UpdateUser([FromBody]EndUser user)
+        {
+            var resultContent = new Content<Boolean>();
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+            {
+                user.Id = id;
+                var result = await _endUserManager_.UpdateEntityAsync(user);
+                if (result.HasError) resultContent.AppendError(result);
+                else resultContent.SetData(result.Data);
+            }
+            else
+            {
+                resultContent.AppendError(new ArgumentException(), "User not signed in properly.");
+            }
+            return resultContent;
+        }
 
-        //[Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        //public async Task<ActionResult<Boolean>> ChangeLastName([FromBody]RequestData<String> lastName)
-        //{
-        //    var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
-        //    if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
-        //        return await _userLogicManager_.ChangeLastName(id, lastName.Data);
-        //    return false;
-        //}
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public async Task<ActionResult<Content<Boolean>>> UpdateUserEmail([FromBody]EndUser user)
+        {
+            var resultContent = new Content<Boolean>();
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+            {
+                var result = await _endUserManager_.UpdateUserEmailAsync(id, user.Email);
+                if (result.HasError) resultContent.AppendError(result);
+                else resultContent.SetData(result.Data);
+            }
+            else
+            {
+                resultContent.AppendError(new ArgumentException(), "User not signed in properly.");
+            }
+            return resultContent;
+        }
 
-        //[Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        //public async Task<ActionResult<Boolean>> ChangeEmail([FromBody]RequestData<String> email)
-        //{
-        //    var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
-        //    if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
-        //        return await _userLogicManager_.ChangeEmail(id, email.Data);
-        //    return false;
-        //}
-
-        //[Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
-        //public async Task<ActionResult<Boolean>> ChangePassword([FromBody]RequestData<String> password)
-        //{
-        //    var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
-        //    if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
-        //        return await _userLogicManager_.ChangePassword(id, password.Data);
-        //    return false;
-        //}
+        [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
+        public async Task<ActionResult<Content<Boolean>>> UpdateUserPassword([FromBody]EndUser user)
+        {
+            var resultContent = new Content<Boolean>();
+            var idString = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id))?.Value;
+            if (!String.IsNullOrWhiteSpace(idString) && Int32.TryParse(idString, out Int32 id))
+            {
+                var result = await _endUserManager_.UpdateUserPasswordAsync(id, user.Password);
+                if (result.HasError) resultContent.AppendError(result);
+                else resultContent.SetData(result.Data);
+            }
+            else
+            {
+                resultContent.AppendError(new ArgumentException(), "User not signed in properly.");
+            }
+            return resultContent;
+        }
 
         [Authorize(Roles = Role.Access.MUST_BE_AUTHENTICATED)]
         public IActionResult Index()
