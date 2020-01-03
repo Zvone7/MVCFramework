@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MvcFrameworkBll.Managers;
+using MvcFrameworkCml.Infrastructure.Managers;
 using MvcFrameworkCml.Infrastructure.Repository;
 using MvcFrameworkCml.Startup;
 using MvcFrameworkDbl;
@@ -70,10 +71,7 @@ namespace MvcFrameworkWeb
                 services.AddScoped(x => new ControllerHelper());
                 services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
                 services.AddScoped<IEndUserRepository, EndUserRepository>();
-                services.AddScoped(x => new EndUserManager(
-                    x.GetService<IEndUserRepository>(),
-                    appSettings,
-                    x.GetService<ILoggerFactory>().CreateLogger("MvcFramework")));
+                services.AddScoped<IEndUserManager, EndUserManager>();
             }
             catch (Exception e)
             {

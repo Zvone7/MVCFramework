@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MvcFrameworkBll.Managers;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkCml.Infrastructure.Managers;
 using MvcFrameworkCml.Transfer;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
@@ -18,10 +18,10 @@ namespace MvcFrameworkWeb.Controllers
 {
     public class LoginController : CustomBaseController
     {
-        private readonly EndUserManager _userLogicManager_;
+        private readonly IEndUserManager _userLogicManager_;
 
         public LoginController(
-            EndUserManager userLogicManager,
+            IEndUserManager userLogicManager,
             ControllerHelper controllerHelper,
             IAppSettings appSettings,
             ILogger logger

@@ -15,7 +15,9 @@ namespace MvcFrameworkBll.Managers
 {
     public class EndUserManager : CustomBaseLogicManager, IEndUserManager
     {
-        private readonly IEndUserRepository _userRepository_;
+        private readonly IEndUserRepository _endUserRepository_;
+        // simplify logging
+        private const EndUser user = null;
 
         public EndUserManager(
           IEndUserRepository userRepository,
@@ -23,10 +25,10 @@ namespace MvcFrameworkBll.Managers
           ILogger logger)
           : base(appSettings, logger)
         {
-            _userRepository_ = userRepository;
+            _endUserRepository_ = userRepository;
         }
 
-        public async Task<Content<EndUser>> GetEntityAsync(int id)
+        public async Task<Content<EndUser>> GetEntityAsync(Int32 id)
         {
             var content = await GetUserWithSensitiveDataAsync(id);
             if (!content.HasError)
@@ -34,20 +36,20 @@ namespace MvcFrameworkBll.Managers
             return content;
         }
 
-        private async Task<Content<EndUser>> GetUserWithSensitiveDataAsync(int id)
+        private async Task<Content<EndUser>> GetUserWithSensitiveDataAsync(Int32 id)
         {
             var resultContent = new Content<EndUser>();
             try
             {
                 if (id <= 0)
                 {
-                    var description = $"Unable to Get user with id {id}";
+                    var description = $"Unable to Get {nameof(user)} with id {id}";
                     resultContent.AppendError(new ArgumentException(description), null);
                     _logger_.LogError(description);
                 }
                 else
                 {
-                    var user = await _userRepository_.GetEntityAsync(id);
+                    var user = await _endUserRepository_.GetEntityAsync(id);
                     if (user == null)
                         resultContent.AppendError(new KeyNotFoundException(), $"Id {id} not found.");
                     else
@@ -56,7 +58,7 @@ namespace MvcFrameworkBll.Managers
             }
             catch (Exception e)
             {
-                var message = $"Unable to Get user with id {id}";
+                var message = $"Unable to get {nameof(user)} with id {id}";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }
@@ -65,7 +67,7 @@ namespace MvcFrameworkBll.Managers
         }
 
         public async Task<Content<EndUser>> GetEntityAsync(
-          string email,
+          String email,
           bool isHashed = false,
           bool requestOnlyActiveUsers = true)
         {
@@ -76,30 +78,30 @@ namespace MvcFrameworkBll.Managers
         }
 
         private async Task<Content<EndUser>> GetUserWithSensitiveDataAsync(
-          string email,
+          String email,
           bool isHashed = false,
           bool requestOnlyActiveUsers = true)
         {
             var resultContent = new Content<EndUser>();
             try
             {
-                if (string.IsNullOrEmpty(email))
+                if (String.IsNullOrEmpty(email))
                 {
-                    var message = $"Unable to Get user - email null/empty.";
+                    var message = $"Unable to Get {nameof(user)} - email null/empty.";
                     resultContent.AppendError(new ArgumentNullException(message));
                     _logger_.LogError(message);
                 }
                 EndUser endUser = isHashed
-                    ? await _userRepository_.GetUserWithSensitiveDataAsync(email, requestOnlyActiveUsers)
-                    : await _userRepository_.GetUserWithSensitiveDataAsync(BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret));
+                    ? await _endUserRepository_.GetUserWithSensitiveDataAsync(email, requestOnlyActiveUsers)
+                    : await _endUserRepository_.GetUserWithSensitiveDataAsync(BCrypt.Net.BCrypt.HashPassword(email, _appSettings_.Secret));
                 if (endUser == null)
-                    resultContent.AppendError(new KeyNotFoundException(), $"User with email {email} not found");
+                    resultContent.AppendError(new KeyNotFoundException(), $"{nameof(user)} with email {email} not found");
                 else
                     resultContent.SetData(endUser);
             }
             catch (Exception ex)
             {
-                var message = "Unable to Get user with username " + email;
+                var message = $"Unable to Get {nameof(user)} with username {email}";
                 resultContent.AppendError(ex, message);
                 _logger_.LogError(ex, message);
             }
@@ -111,12 +113,12 @@ namespace MvcFrameworkBll.Managers
             var resultContent = new Content<IEnumerable<EndUser>>();
             try
             {
-                var users = await _userRepository_.GetAllEntitiesAsync();
+                var users = await _endUserRepository_.GetAllEntitiesAsync();
                 resultContent.SetData(users.Select(u => u.ReturnWithoutSensitiveData()));
             }
             catch (Exception e)
             {
-                string message = $"Unable to GetAll users.";
+                String message = $"Unable to GetAll {nameof(user)}s.";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }
@@ -128,12 +130,12 @@ namespace MvcFrameworkBll.Managers
             var resultContent = new Content<Boolean>();
             try
             {
-                if (string.IsNullOrEmpty(user.Password) ||
-                    string.IsNullOrEmpty(user.Email) ||
-                    string.IsNullOrEmpty(user.LastName) ||
-                    string.IsNullOrEmpty(user.Name))
+                if (String.IsNullOrEmpty(user.Password) ||
+                    String.IsNullOrEmpty(user.Email) ||
+                    String.IsNullOrEmpty(user.LastName) ||
+                    String.IsNullOrEmpty(user.Name))
                 {
-                    string message = $"Unable to add user - some properties are null/empty.";
+                    String message = $"Unable to add {nameof(EndUserManager.user)} - some properties are null/empty.";
                     resultContent.AppendError(new ArgumentNullException(), message);
                     _logger_.LogError(message);
                 }
@@ -154,13 +156,13 @@ namespace MvcFrameworkBll.Managers
                     user.IsActive = true;
                     //todo email confirm
                     user.EmailConfirmed = true;
-                    var result = await _userRepository_.AddEntityAsync(user);
+                    var result = await _endUserRepository_.AddEntityAsync(user);
                     resultContent.SetData(result);
                 }
             }
             catch (Exception e)
             {
-                var message = "Unable to Add user.";
+                var message = $"Unable to Add {nameof(user)}.";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }
@@ -174,7 +176,7 @@ namespace MvcFrameworkBll.Managers
             {
                 if (String.IsNullOrEmpty(user.LastName) || String.IsNullOrEmpty(user.Name))
                 {
-                    string message = $"Unable to update user - some properties are null/empty.";
+                    var message = $"Unable to update {nameof(EndUserManager.user)} - some properties are null/empty.";
                     resultContent.AppendError(new ArgumentNullException(), message);
                     _logger_.LogError(message);
                 }
@@ -183,7 +185,7 @@ namespace MvcFrameworkBll.Managers
                     var userContent = await GetEntityAsync(user.Id);
                     if (userContent.HasError)
                     {
-                        string message = $"Unable to update user - active user not found.";
+                        var message = $"Unable to update {nameof(EndUserManager.user)} - active user not found.";
                         resultContent.AppendError(new KeyNotFoundException(), message);
                         _logger_.LogError(message);
                     }
@@ -192,13 +194,13 @@ namespace MvcFrameworkBll.Managers
                         if (String.Equals(userContent.Data.Name, user.Name, StringComparison.Ordinal) &&
                             String.Equals(userContent.Data.LastName, user.LastName, StringComparison.Ordinal))
                         {
-                            string description = $"Tried updating user with same values";
+                            var description = $"Tried updating {nameof(EndUserManager.user)} with same values";
                             resultContent.AppendError(new ArgumentException(), description);
                             _logger_.LogError(description);
                         }
                         else
                         {
-                            var result = await _userRepository_.UpdateEntityAsync(user);
+                            var result = await _endUserRepository_.UpdateEntityAsync(user);
                             resultContent.SetData(result);
                         }
                     }
@@ -206,33 +208,33 @@ namespace MvcFrameworkBll.Managers
             }
             catch (Exception e)
             {
-                string message = $"Unable to Update user.";
+                var message = $"Unable to Update {nameof(user)}.";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(message);
             }
             return resultContent;
         }
 
-        public async Task<Content<Boolean>> DeleteEntityAsync(int id)
+        public async Task<Content<Boolean>> DeleteEntityAsync(Int32 id)
         {
             var resultContent = new Content<Boolean>();
             try
             {
                 if (id <= 0)
                 {
-                    var message = $"Unable to Delete user with id {id}";
+                    var message = $"Unable to Delete {nameof(user)} with id {id}";
                     resultContent.AppendError(new ArgumentOutOfRangeException(), message);
                     _logger_.LogError(message);
                 }
                 else
                 {
-                    var result = await _userRepository_.DeleteEntityAsync(id);
+                    var result = await _endUserRepository_.DeleteEntityAsync(id);
                     resultContent.SetData(result);
                 }
             }
             catch (Exception e)
             {
-                var message = $"Unable to Delete user with id {id}";
+                var message = $"Unable to Delete {nameof(user)} with id {id}";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }
@@ -246,13 +248,13 @@ namespace MvcFrameworkBll.Managers
             {
                 if (id <= 0)
                 {
-                    var message = $"Unable to Update user email for user {id} - id must be > 0";
+                    var message = $"Unable to {nameof(UpdateUserEmailAsync)} for {nameof(user)} {id} - id must be > 0";
                     resultContent.AppendError(new ArgumentOutOfRangeException(), message);
                     _logger_.LogError(message);
                 }
                 else if (String.IsNullOrEmpty(newEmail))
                 {
-                    var message = $"Unable to Update user email for user {id} - email cant be empty.";
+                    var message = $"Unable to {nameof(UpdateUserEmailAsync)} for {nameof(user)} {id} - email cant be empty.";
                     resultContent.AppendError(new ArgumentException(), message);
                     _logger_.LogError(message);
                 }
@@ -268,20 +270,20 @@ namespace MvcFrameworkBll.Managers
                         var newEmailHashed = BCrypt.Net.BCrypt.HashPassword(newEmail, _appSettings_.Secret);
                         if (String.Equals(newEmailHashed, userContent.Data.Email, StringComparison.InvariantCulture))
                         {
-                            var message = $"Unable to {nameof(UpdateUserEmailAsync)} of user - new value same as the old one";
+                            var message = $"Unable to {nameof(UpdateUserEmailAsync)} of {nameof(user)} - new value same as the old one";
                             resultContent.AppendError(new ArgumentException(), message);
                             _logger_.LogError(message);
                         }
                         else
                         {
-                            await _userRepository_.UpdateUserEmailAsync(id, newEmailHashed);
+                            await _endUserRepository_.UpdateUserEmailAsync(id, newEmailHashed);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                string message = $"Unable to {nameof(UpdateUserEmailAsync)} of user with id {id}";
+                var message = $"Unable to {nameof(UpdateUserEmailAsync)} of {nameof(user)} with id {id}";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }
@@ -295,13 +297,13 @@ namespace MvcFrameworkBll.Managers
             {
                 if (id <= 0)
                 {
-                    var message = $"Unable to Update user password for user {id}";
+                    var message = $"Unable to {nameof(UpdateUserPasswordAsync)} for {nameof(user)} {id}";
                     resultContent.AppendError(new ArgumentOutOfRangeException(), message);
                     _logger_.LogError(message);
                 }
                 else if (String.IsNullOrEmpty(newPassword))
                 {
-                    var message = $"Unable to Update user password for user {id} - password cant be empty.";
+                    var message = $"Unable to {nameof(UpdateUserPasswordAsync)} for {nameof(user)} id {id} - password cant be empty.";
                     resultContent.AppendError(new ArgumentException(), message);
                     _logger_.LogError(message);
                 }
@@ -321,20 +323,20 @@ namespace MvcFrameworkBll.Managers
                         var newPasswordHashed = BCrypt.Net.BCrypt.HashPassword(newPassword, userContent.Data.Salt);
                         if (String.Equals(newPasswordHashed, userContent.Data.Password, StringComparison.InvariantCulture))
                         {
-                            var message = $"Unable to {nameof(UpdateUserPasswordAsync)} of user - new value same as the old one";
+                            var message = $"Unable to {nameof(UpdateUserPasswordAsync)} of {nameof(user)} - new value same as the old one";
                             resultContent.AppendError(new ArgumentException(), message);
                             _logger_.LogError(message);
                         }
                         else
                         {
-                            await _userRepository_.UpdateUserPasswordAsync(id, newPasswordHashed);
+                            await _endUserRepository_.UpdateUserPasswordAsync(id, newPasswordHashed);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                string message = $"Unable to {nameof(UpdateUserPasswordAsync)} of user with id {id}";
+                var message = $"Unable to {nameof(UpdateUserPasswordAsync)} of {nameof(user)} with id {id}";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }
@@ -358,10 +360,10 @@ namespace MvcFrameworkBll.Managers
                 else
                 {
                     var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password, dbContent.Data.Salt);
-                    var isAuthenticated = await _userRepository_.TryAuthenticateAsync(emailHashed, passwordHashed);
+                    var isAuthenticated = await _endUserRepository_.TryAuthenticateAsync(emailHashed, passwordHashed);
                     if (!isAuthenticated)
                     {
-                        var message = $"User with email {email} not authenticated";
+                        var message = $"{nameof(user)} with email {email} not authenticated";
                         resultContent.AppendError(new KeyNotFoundException(), message);
                         _logger_.LogError(message);
                     }
@@ -371,7 +373,7 @@ namespace MvcFrameworkBll.Managers
             }
             catch (Exception e)
             {
-                var message = $"Unable to authenticate user with email {email}";
+                var message = $"Unable to authenticate {nameof(user)} with email {email}";
                 resultContent.AppendError(e, message);
                 _logger_.LogError(e, message);
             }

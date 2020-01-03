@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MvcFrameworkBll.Managers;
 using MvcFrameworkCml;
 using MvcFrameworkCml.Infrastructure;
+using MvcFrameworkCml.Infrastructure.Managers;
 using MvcFrameworkCml.Transfer;
 using MvcFrameworkWeb.Services;
 using System;
@@ -16,15 +16,15 @@ namespace MvcFrameworkWeb.Controllers
 {
     public class UserController : CustomBaseController
     {
-        private readonly EndUserManager _endUserManager_;
+        private readonly IEndUserManager _endUserManager_;
         public UserController(
-            EndUserManager userLogicManager,
+            IEndUserManager endUserManager,
             ControllerHelper controllerHelper,
             IAppSettings appSettings,
             ILogger logger
             ) : base(controllerHelper, appSettings, logger)
         {
-            _endUserManager_ = userLogicManager;
+            _endUserManager_ = endUserManager;
         }
 
         [Authorize(Roles = Role.Access.MUST_BE_ADMIN)]

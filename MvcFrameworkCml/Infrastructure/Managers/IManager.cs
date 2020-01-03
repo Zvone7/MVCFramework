@@ -10,7 +10,7 @@ namespace MvcFrameworkCml.Infrastructure.Managers
         Task<Content<Boolean>> AddEntityAsync(T entity);
         Task<Content<Boolean>> UpdateEntityAsync(T entity);
         Task<Content<Boolean>> DeleteEntityAsync(int id);
-        Task<Content<IEnumerable<EndUser>>> GetAllEntitiesAsync();
-        Task<Content<EndUser>> GetEntityAsync(int id);
+        Task<Content<IEnumerable<T>>> GetAllEntitiesAsync();
+        Task<Content<T>> GetEntityAsync(int id);
     }
 }
