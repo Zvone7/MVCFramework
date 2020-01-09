@@ -1,0 +1,21 @@
+# removes all containers
+docker container prune
+
+# run sample mvc5 app
+docker run --name aspnet_sample --rm -it -p 8000:80 mcr.microsoft.com/dotnet/framework/samples:aspnetapp
+ 
+#build docker image
+docker build -t zvone727/testing:test1 .
+
+#run docker image
+docker run -d --name testingstuff --rm -it -p 8000:80 zvone727/testing:test1
+# -d means detached
+# --name is testingstuff, name of container
+# repo/image:tag
+
+# stop/remove docker containers
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+#remove docker images containing ...
+docker rmi $(docker images --format "{{.Repository}}:{{.Tag}}"|findstr "testing")

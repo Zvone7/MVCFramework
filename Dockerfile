@@ -1,0 +1,35 @@
+#buildnode=====================================
+FROM node:latest as buildnode
+WORKDIR /app/MvcFrameworkWeb
+# add `/app/MvcFrameworkWeb/node_modules/.bin` to $PATH
+ENV PATH /app/MvcFrameworkWeb/node_modules/.bin:$PATH
+# install and cache app dependencies
+COPY MvcFrameworkWeb/package.json /app/MvcFrameworkWeb/package.json
+RUN npm install
+#RUN npm install @vue/cli@3.7.0 -g
+COPY . .
+
+#builddotnet=====================================
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS builddotnet
+WORKDIR /app
+
+# copy csproj and restore as distinct layers
+COPY *.sln .
+COPY MvcFrameworkWeb/*.csproj ./MvcFrameworkWeb/
+COPY MvcFrameworkDbl/*.csproj ./MvcFrameworkDbl/
+COPY MvcFrameworkBll/*.csproj ./MvcFrameworkBll/
+COPY MvcFrameworkCml/*.csproj ./MvcFrameworkCml/
+RUN dotnet restore
+
+# copy everything else and build app
+COPY MvcFrameworkWeb/. ./MvcFrameworkWeb/
+COPY MvcFrameworkDbl/. ./MvcFrameworkDbl/
+COPY MvcFrameworkBll/. ./MvcFrameworkBll/
+COPY MvcFrameworkCml/. ./MvcFrameworkCml/
+WORKDIR /app/MvcFrameworkWeb
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.1 AS runtime
+WORKDIR /app
+COPY --from=builddotnet /app/MvcFrameworkWeb/out ./
+ENTRYPOINT ["dotnet", "MvcFrameworkWeb.dll"]
