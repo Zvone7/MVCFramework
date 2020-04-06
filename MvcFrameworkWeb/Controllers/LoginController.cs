@@ -92,7 +92,7 @@ namespace MvcFrameworkWeb.Controllers
                     EmailConfirmed = true,
                     Name = "Mr.",
                     LastName = "Admin",
-                    Password = "admin",
+                    Password = "Admin1234",
                     Role = "admin"
                 });
         }
