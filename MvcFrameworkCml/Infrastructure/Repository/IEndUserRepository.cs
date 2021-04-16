@@ -7,7 +7,7 @@ namespace MvcFrameworkCml.Infrastructure.Repository
     {
         Task<bool> TryAuthenticateAsync(String email, String password);
 
-        Task<EndUser> GetUserWithSensitiveDataAsync(String email, Boolean requestOnlyActiveUsers = true);
+        Task<EndUser> GetUserWithSensitiveDataAsync(String email, Boolean mustBeActive = true);
 
         Task<Boolean> UpdateUserEmailAsync(Int32 id, String email);
 

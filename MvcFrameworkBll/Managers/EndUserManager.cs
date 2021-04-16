@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MvcFrameworkCml.Infrastructure.Startup;
 
 namespace MvcFrameworkBll.Managers
 {
@@ -71,7 +72,7 @@ namespace MvcFrameworkBll.Managers
           bool isHashed = false,
           bool requestOnlyActiveUsers = true)
         {
-            var content = await GetEntityAsync(email, isHashed, requestOnlyActiveUsers);
+            var content = await GetUserWithSensitiveDataAsync(email, isHashed, requestOnlyActiveUsers);
             if (!content.HasError)
                 content.Data.ReturnWithoutSensitiveData();
             return content;
@@ -359,6 +360,7 @@ namespace MvcFrameworkBll.Managers
                 }
                 else
                 {
+                    var ss = BCrypt.Net.BCrypt.GenerateSalt();
                     var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password, dbContent.Data.Salt);
                     var isAuthenticated = await _endUserRepository_.TryAuthenticateAsync(emailHashed, passwordHashed);
                     if (!isAuthenticated)
