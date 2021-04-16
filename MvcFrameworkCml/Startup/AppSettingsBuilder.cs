@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using MvcFrameworkCml.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using MvcFrameworkCml.Infrastructure.Startup;
 
 namespace MvcFrameworkCml.Startup
@@ -19,11 +18,11 @@ namespace MvcFrameworkCml.Startup
                     {{"App:ComputerName", computerName}};
 
                 IConfiguration configuration = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory()) // Priority Order            overrides:
-                    .AddInMemoryCollection(runtimeSettings) // add runtime properties.      
-                    .AddJsonFile("appsettings.json") // add default properties.      ↑
-                    .AddEnvironmentVariables() // add environment vaiables.    ↑
-                    .AddCommandLine(args ?? new String[] { }, MapJsonProperties()) // add command line arguments.  ↑
+                    .SetBasePath(Directory.GetCurrentDirectory()) //                                Priority Order            overrides:
+                    .AddInMemoryCollection(runtimeSettings) //                                      add runtime properties.      
+                    .AddJsonFile("appsettings.json") //                                             add default properties.      ↑
+                    .AddEnvironmentVariables() //                                                   add environment vaiables.    ↑
+                    .AddCommandLine(args ?? new String[] { }, MapJsonProperties()) //  add command line arguments.  ↑
                     .Build();
 
                 IAppSettings appSettings = configuration.Get<AppSettings>();

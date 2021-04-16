@@ -10,7 +10,7 @@
       "IsActive": true,
       "EmailConfirmed": true,
       "DateJoined": "2020-10-01T10:00:00",
-      "Role": "Admin,User"
+      "Role": "admin"
     }
   ]
 }

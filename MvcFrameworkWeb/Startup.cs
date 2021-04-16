@@ -38,7 +38,12 @@ namespace MvcFrameworkWeb
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                 });
 
-                services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                services.AddMvc(opt => { opt.EnableEndpointRouting = true; });
+                services.AddControllersWithViews().AddRazorRuntimeCompilation();
+                
+                services.AddControllers();
+                services.AddRazorPages();
+                 services.AddCors();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
@@ -85,6 +90,7 @@ namespace MvcFrameworkWeb
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 throw;
             }
         }
@@ -94,30 +100,28 @@ namespace MvcFrameworkWeb
         {
             if (env.IsDevelopment())
             {
+                Console.WriteLine("Running on development.");
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                //app.UseHsts();
-            }
 
-            // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
+             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseMvc(routes =>
+             app.UseCookiePolicy();
+            app.UseRouting();
+             app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}"); 
+                endpoints.MapControllers();
             });
+
         }
     }
 }

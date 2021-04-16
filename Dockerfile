@@ -10,7 +10,7 @@ RUN npm install
 COPY . .
 
 #builddotnet=====================================
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS builddotnet
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddotnet
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -29,7 +29,7 @@ COPY MvcFrameworkCml/. ./MvcFrameworkCml/
 WORKDIR /app/MvcFrameworkWeb
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.1 AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:5.0 AS runtime
 WORKDIR /app
 COPY --from=builddotnet /app/MvcFrameworkWeb/out ./
 ENTRYPOINT ["dotnet", "MvcFrameworkWeb.dll"]
