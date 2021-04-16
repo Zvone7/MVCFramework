@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using MvcFrameworkCml.Infrastructure.Startup;
 
 namespace MvcFrameworkDbl
 {
@@ -21,7 +22,7 @@ namespace MvcFrameworkDbl
 
         #region SQL_HELPERS
 
-        const string USER_TABLE = "[TestDb].[dbo].[User]";
+        const String USER_TABLE = "[TestDb].[dbo].[User]";
 
         private String GetSelectUserSql(
             Int32 id = 0,

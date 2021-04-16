@@ -14,6 +14,7 @@ using MvcFrameworkDbl;
 using MvcFrameworkWeb.Services;
 using System;
 using System.Security.Principal;
+
 namespace MvcFrameworkWeb
 {
     public class Startup
@@ -31,11 +32,11 @@ namespace MvcFrameworkWeb
             try
             {
                 services.Configure<CookiePolicyOptions>(options =>
-                    {
-                        // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                        options.CheckConsentNeeded = context => true;
-                        options.MinimumSameSitePolicy = SameSiteMode.None;
-                    });
+                {
+                    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                    options.CheckConsentNeeded = context => true;
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                });
 
                 services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -70,12 +71,20 @@ namespace MvcFrameworkWeb
                 // DI
                 services.AddScoped(x => new ControllerHelper());
                 services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
-                services.AddScoped<IEndUserRepository, EndUserRepository>();
+                if (appSettings.UseMockedDb)
+                {
+                    services.AddScoped<IMockedDataProvider, MockedDataProvider>();
+                    services.AddScoped<IEndUserRepository, MockedEndUserRepository>();
+                }
+                else
+                {
+                    services.AddScoped<IEndUserRepository, EndUserRepository>();
+                }
+
                 services.AddScoped<IEndUserManager, EndUserManager>();
             }
             catch (Exception e)
             {
-
                 throw;
             }
         }
