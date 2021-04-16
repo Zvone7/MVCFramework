@@ -14,6 +14,7 @@ using MvcFrameworkDbl;
 using MvcFrameworkWeb.Services;
 using System;
 using System.Security.Principal;
+
 namespace MvcFrameworkWeb
 {
     public class Startup
@@ -31,13 +32,18 @@ namespace MvcFrameworkWeb
             try
             {
                 services.Configure<CookiePolicyOptions>(options =>
-                    {
-                        // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                        options.CheckConsentNeeded = context => true;
-                        options.MinimumSameSitePolicy = SameSiteMode.None;
-                    });
+                {
+                    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                    options.CheckConsentNeeded = context => true;
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                });
 
-                services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                services.AddMvc(opt => { opt.EnableEndpointRouting = true; });
+                services.AddControllersWithViews().AddRazorRuntimeCompilation();
+                
+                services.AddControllers();
+                services.AddRazorPages();
+                 services.AddCors();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
@@ -70,12 +76,21 @@ namespace MvcFrameworkWeb
                 // DI
                 services.AddScoped(x => new ControllerHelper());
                 services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
-                services.AddScoped<IEndUserRepository, EndUserRepository>();
+                if (appSettings.UseMockedDb)
+                {
+                    services.AddScoped<IMockedDataProvider, MockedDataProvider>();
+                    services.AddScoped<IEndUserRepository, MockedEndUserRepository>();
+                }
+                else
+                {
+                    services.AddScoped<IEndUserRepository, EndUserRepository>();
+                }
+
                 services.AddScoped<IEndUserManager, EndUserManager>();
             }
             catch (Exception e)
             {
-
+                Console.WriteLine(e);
                 throw;
             }
         }
@@ -85,30 +100,28 @@ namespace MvcFrameworkWeb
         {
             if (env.IsDevelopment())
             {
+                Console.WriteLine("Running on development.");
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                //app.UseHsts();
-            }
 
-            // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
+             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseMvc(routes =>
+             app.UseCookiePolicy();
+            app.UseRouting();
+             app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}"); 
+                endpoints.MapControllers();
             });
+
         }
     }
 }

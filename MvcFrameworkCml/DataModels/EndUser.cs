@@ -19,9 +19,9 @@ namespace MvcFrameworkCml
         public Boolean IsActive { get; set; }
         public Boolean EmailConfirmed { get; set; }
         public DateTime? DateJoined { get; set; }
-        public string Role { get; set; }
+        public String Role { get; set; }
 
-        public override string ToString()
+        public override String ToString()
         {
             return $"{Name} {LastName}";
         }
@@ -37,7 +37,7 @@ namespace MvcFrameworkCml
 
             var idClaim = claims.FirstOrDefault(x => x.Type.Equals(ClaimTypesExt.Id));
 
-            if (idClaim == null || !Int32.TryParse(idClaim.Value, out Int32 id))
+            if (idClaim == null || !int.TryParse(idClaim.Value, out Int32 id))
             {
                 //todo logging
                 throw new NullReferenceException("Missing id claim");
