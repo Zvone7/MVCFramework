@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MvcFrameworkCml
+namespace MvcFrameworkCml.DataModels
 {
     public static class ClaimTypesExt
     {

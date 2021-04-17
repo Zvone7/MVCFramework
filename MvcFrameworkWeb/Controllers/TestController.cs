@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using MvcFrameworkCml.DataModels;
 using MvcFrameworkCml.Infrastructure.Startup;
 
 namespace MvcFrameworkWeb.Controllers

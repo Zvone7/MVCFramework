@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MvcFrameworkCml;
+using MvcFrameworkCml.DataModels;
 using MvcFrameworkCml.ViewModels;
 
 namespace MvcFrameworkWeb.Services
