@@ -14,17 +14,23 @@ using MvcFrameworkDbl;
 using MvcFrameworkWeb.Services;
 using System;
 using System.Security.Principal;
+using Microsoft.Extensions.Hosting;
+using MvcFrameworkBll.Data;
+using MvcFrameworkCml.Infrastructure.Data;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace MvcFrameworkWeb
 {
-    public class Startup
+    public partial class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -40,53 +46,18 @@ namespace MvcFrameworkWeb
 
                 services.AddMvc(opt => { opt.EnableEndpointRouting = true; });
                 services.AddControllersWithViews().AddRazorRuntimeCompilation();
-                
+
                 services.AddControllers();
                 services.AddRazorPages();
-                 services.AddCors();
+                services.AddCors();
                 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
-                // COOKIES
-                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
-                    options =>
-                    {
-                        options.LoginPath = "/Login";
-                        options.AccessDeniedPath = "/Login";
-                        options.Cookie.Name = "UserLoginCookie";
-                        options.Cookie.HttpOnly = false;
-                        //MinimumSameSitePolicy = SameSiteMode.Strict,
-                    });
-
                 // APPSETTINGS
                 var appSettings = AppSettingsBuilder.Build();
-                services.AddScoped(x => appSettings);
+                services.AddSingleton(x => appSettings);
 
-                // LOGGING
-                var minimumLoggingLevel = LogLevel.Information;
-                if (!String.IsNullOrWhiteSpace(appSettings.LoggingSettings.DefaultLogLevel) &&
-                    Enum.TryParse(appSettings.LoggingSettings.DefaultLogLevel, out LogLevel minimumLogingLevelConfigValue))
-                    minimumLoggingLevel = minimumLogingLevelConfigValue;
-                services.AddLogging(builder =>
-                {
-                    builder.AddConsole();
-                    builder.SetMinimumLevel(minimumLoggingLevel);
-                });
-
-                // DI
-                services.AddScoped(x => new ControllerHelper());
-                services.AddScoped(x => x.GetService<ILoggerFactory>().CreateLogger("MvcFramework"));
-                if (appSettings.UseMockedDb)
-                {
-                    services.AddScoped<IMockedDataProvider, MockedDataProvider>();
-                    services.AddScoped<IEndUserRepository, MockedEndUserRepository>();
-                }
-                else
-                {
-                    services.AddScoped<IEndUserRepository, EndUserRepository>();
-                }
-
-                services.AddScoped<IEndUserManager, EndUserManager>();
+                AddBusinesLogicAsync(services, Configuration, _env, appSettings);
             }
             catch (Exception e)
             {
@@ -110,18 +81,17 @@ namespace MvcFrameworkWeb
                 .AllowAnyHeader());
 
             app.UseAuthentication();
-             app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-             app.UseCookiePolicy();
+            app.UseCookiePolicy();
             app.UseRouting();
-             app.UseAuthorization();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}"); 
+                endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllers();
             });
-
         }
     }
 }

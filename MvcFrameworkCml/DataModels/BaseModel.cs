@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MvcFrameworkCml
+namespace MvcFrameworkCml.DataModels
 {
     public abstract class BaseModel
     {

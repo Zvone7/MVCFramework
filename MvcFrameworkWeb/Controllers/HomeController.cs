@@ -6,6 +6,7 @@ using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.ViewModels;
 using MvcFrameworkWeb.Services;
 using System.Diagnostics;
+using MvcFrameworkCml.DataModels;
 using MvcFrameworkCml.Infrastructure.Startup;
 
 namespace MvcFrameworkWeb.Controllers

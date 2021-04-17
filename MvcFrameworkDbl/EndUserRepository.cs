@@ -1,167 +1,78 @@
 ﻿using Dapper;
 using MvcFrameworkCml;
-using MvcFrameworkCml.Infrastructure;
 using MvcFrameworkCml.Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using MvcFrameworkCml.Infrastructure.Startup;
+using MvcFrameworkCml.DataModels;
+using MvcFrameworkCml.Infrastructure.Data;
 
 namespace MvcFrameworkDbl
 {
     public class EndUserRepository : IEndUserRepository
     {
-        private readonly IAppSettings appSettings;
+        private readonly String _connectionString_;
 
-        public EndUserRepository(IAppSettings appSettings)
+        public EndUserRepository(IConnectionStringProvider connectionStringProvider)
         {
-            this.appSettings = appSettings;
+            _connectionString_ = connectionStringProvider.GetConnectionString();
         }
-
-        #region SQL_HELPERS
-
-        const String USER_TABLE = "[TestDb].[dbo].[User]";
-
-        private String GetSelectUserSql(
-            Int32 id = 0,
-            String email = default,
-            String password = default,
-            Boolean mustBeActive = true)
-        {
-            var sql =
-                $"SELECT " +
-                $"[Id]" +
-                $",[Name]" +
-                $",[LastName]" +
-                $",[Email]" +
-                $",[Password]" +
-                $",[Salt]" +
-                $",[Role]" +
-                $",[EmailConfirmed]" +
-                $",[IsActive]" +
-                $",[DateJoined]" +
-                $"FROM {USER_TABLE}";
-            if (id > 0)
-            {
-                sql += $" WHERE [Id] = {id}";
-                if (mustBeActive)
-                    sql += $" AND [IsActive] = 1";
-            }
-            else if (!String.IsNullOrWhiteSpace(email))
-            {
-                sql += $" WHERE [Email] like '{email}'";
-                if (!String.IsNullOrWhiteSpace(password))
-                    sql += $" AND [Password] like '{password}'";
-                if (mustBeActive)
-                    sql += $" AND [IsActive] = 1";
-            }
-            else
-            {
-                if (mustBeActive) sql += " WHERE [IsActive] = 1";
-            }
-            return sql;
-        }
-
-        private String GetInsertUserSql(EndUser user)
-        {
-            return
-                $"INSERT INTO {USER_TABLE}" +
-                $"([Name],[LastName]," +
-                $"[Email],[Password]," +
-                $"[Salt],[Role]," +
-                $"[EmailConfirmed],[IsActive]," +
-                $"[DateJoined])" +
-                $"VALUES(" +
-                $"'{user.Name}','{user.LastName}'," +
-                $"'{user.Email}','{user.Password}'," +
-                $"'{user.Salt}','{user.Role}'," +
-                $"'{user.EmailConfirmed}','{user.IsActive}'," +
-                $"'{user.DateJoined.Value.ToString("yyyy-MM-dd HH:mm:ss.fff")}')";
-        }
-
-        private String GetUpdateUserSql(EndUser user)
-        {
-            return
-                $"UPDATE {USER_TABLE}" +
-                $" SET" +
-                $"[Name] = '{user.Name}'" +
-                $",[LastName]= '{user.LastName}'" +
-                //$",[Email]= '{user.Email}'" +
-                //$",[Password]= '{user.Password}'" +
-                //$",[Salt]= '{user.Salt}'" +
-                //$",[Role]= '{user.Role}'" +
-                //$",[EmailConfirmed]= '{user.EmailConfirmed}'" +
-                //$",[IsActive]= '{user.IsActive}'" +
-                //$",[DateJoined]= '{user.DateJoined.Value.ToString("yyyy-MM-dd HH:mm:ss.fff")}'" +
-                $" WHERE Id = {user.Id}";
-        }
-
-        private String GetUpdateUserEmailSql(Int32 id, String email)
-        {
-            return
-                $"UPDATE {USER_TABLE}" +
-                $" SET" +
-                $"[Email]= '{email}'" +
-                $" WHERE Id = {id}";
-        }
-
-        private String GetUpdateUserPasswordSql(Int32 id, String password)
-        {
-            return
-                $"UPDATE {USER_TABLE}" +
-                $" SET" +
-                $"[Password]= '{password}'" +
-                $" WHERE Id = {id}";
-        }
-
-        private String GetDeleteUserSql(Int32 id)
-        {
-            return
-                $"UPDATE {USER_TABLE}" +
-                $" SET" +
-                $"[IsActive]= '{false}'" +
-                $"WHERE Id = {id}";
-        }
-
-        #endregion
 
         public async Task<Boolean> AddEntityAsync(EndUser user)
         {
-            var sql = $"{GetInsertUserSql(user)}";
+            var sql = $@"INSERT INTO [User]
+                            ([Name],[LastName],[Email],
+                            [Password],[Salt],[Role],
+                            [EmailConfirmed],[IsActive],[DateJoined])
+                        VALUES(
+                            @name,@lastName,@email,
+                            @password,@salt,@role,
+                            @emailConfirmed,@isActive,@dateJoined)";
 
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = await connection.ExecuteAsync(sql, new
             {
-                var result = await connection.ExecuteAsync(sql);
-                return result > 0;
-            }
+                name = user.Name,
+                lastName = user.LastName,
+                email = user.Email,
+                password = user.Password,
+                salt = user.Salt,
+                role = user.Role,
+                emailConfirmed = user.EmailConfirmed,
+                isActive = user.IsActive,
+                dateJoined = user.DateJoined.ToString("yyyy-MM-dd HH:mm:ss.fff")
+            });
+            return result > 0;
         }
 
         public async Task<Boolean> DeleteEntityAsync(Int32 id)
         {
-            var sql = $"{GetDeleteUserSql(id)}";
-
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.ExecuteAsync(sql);
-                return result > 0 ? true : false;
-            }
+            var sql =
+                $@"  UPDATE [User]
+                     SET [IsActive]= false
+                     WHERE Id = @id";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = await connection.ExecuteAsync(sql, new {id = id});
+            return result > 0 ? true : false;
         }
 
         public async Task<EndUser> GetEntityAsync(Int32 id, Boolean mustBeActive = true)
         {
-            var sql = $"{GetSelectUserSql(id)}";
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.QueryAsync<EndUser>(sql);
-                var user = result.FirstOrDefault();
-                if (user == null) throw new KeyNotFoundException($"User with id ({id}) not found.");
-                if (result.Count() > 1) throw new InvalidProgramException($"Two users with same id ({id}) found.");
-                if (!user.IsActive) throw new Exception($"User with id ({id}) not active.");
-                if (!user.EmailConfirmed) throw new Exception($"User with email ({id}) not confirmed.");
-                return user;
-            }
+            var sql = $@"SELECT TOP 1
+                            [Id],[Name],[LastName],
+                            [Email],[Password],[Salt],
+                            [Role],[EmailConfirmed],
+                            [IsActive],[DateJoined]
+                        FROM [User] 
+                        WHERE Id = @id";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = (await connection.QueryAsync<EndUser>(sql, new {id = id})).ToList();
+            var user = result.Single();
+            if (mustBeActive && !user.IsActive) throw new Exception($"User with id ({id}) not active.");
+            if (!user.EmailConfirmed) throw new Exception($"User with email ({id}) not confirmed.");
+            return user;
         }
 
         /// <summary>
@@ -169,79 +80,112 @@ namespace MvcFrameworkDbl
         /// </summary>
         public async Task<EndUser> GetUserWithSensitiveDataAsync(String email, Boolean mustBeActive = true)
         {
-            var sql = $"{GetSelectUserSql(0, email, "", mustBeActive)}";
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.QueryAsync<EndUser>(sql);
-                var user = result.FirstOrDefault();
-                if (user == null) throw new KeyNotFoundException($"User with email {email} not found.");
-                if (result.Count() > 1) throw new InvalidProgramException($"Two users with same email ({email} -> {user.Email}) found.");
-                if (!user.IsActive) throw new Exception($"User with email ({email} -> {user.Email}) not active.");
-                if (!user.EmailConfirmed) throw new Exception($"User with email ({email} -> {user.Email}) not confirmed.");
-                return user;
-            }
+            var sql = $@"SELECT TOP 1
+                            [Id],[Name],[LastName],
+                            [Email],[Password],[Salt],
+                            [Role],[EmailConfirmed],
+                            [IsActive],[DateJoined]
+                        FROM [User] 
+                        WHERE Email = @email";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = (await connection.QueryAsync<EndUser>(sql, new {email = email})).ToList();
+            var user = result.Single();
+            if (user == null) throw new KeyNotFoundException($"User with email {email} not found.");
+            if (mustBeActive && !user.IsActive) throw new Exception($"User with email ({email}) not active.");
+            if (!user.EmailConfirmed) throw new Exception($"User with email ({email} -> {user.Email}) not confirmed.");
+            return user;
         }
 
         /// <summary>
         /// Email must be hashed.
         /// </summary>
-        public async Task<Boolean> TryAuthenticateAsync(String email, String password)
+        public async Task<Boolean> TryAuthenticateAsync(String emailEncrypted, String passwordEncrypted)
         {
-            var sql = $"{GetSelectUserSql(0, email, password)}";
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
+            var sql = $@"SELECT TOP 1
+                            [Id],[Name],[LastName],
+                            [Email],[Password],[Salt],
+                            [Role],[EmailConfirmed],
+                            [IsActive],[DateJoined]
+                        FROM [User] 
+                        WHERE Email = @email
+                        AND Password = @password";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = (await connection.QueryAsync<EndUser>(sql, new
             {
-                var result = await connection.QueryAsync<EndUser>(sql);
-                var user = result.FirstOrDefault();
-                if (user == null) throw new KeyNotFoundException($"User with email {email} and password {password} not found.");
-                if (result.Count() > 1) throw new InvalidProgramException($"Two users with same email ({email} -> {user.Email}) found.");
-                if (!user.IsActive) throw new Exception($"User with email ({email} -> {user.Email}) not active.");
-                if (!user.EmailConfirmed) throw new Exception($"User with email ({email} -> {user.Email}) not confirmed.");
-                return true;
-            }
+                email = emailEncrypted,
+                password = passwordEncrypted
+            })).ToList();
+            var user = result.Single();
+            if (user == null) throw new KeyNotFoundException($"User with email/password combination not found.");
+            if (result.Count > 1) throw new InvalidProgramException($"Two users with same  email/password combination found.");
+            if (!user.IsActive) throw new Exception($"User with  email/password combination not active.");
+            if (!user.EmailConfirmed) throw new Exception($"User with  email/password combination not confirmed.");
+            return true;
         }
 
         public async Task<IEnumerable<EndUser>> GetAllEntitiesAsync()
         {
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.QueryAsync<EndUser>(GetSelectUserSql());
-                return result;
-            }
+            var sql = $@"SELECT
+                            [Id],[Name],[LastName],
+                            [Email],[Password],[Salt],
+                            [Role],[EmailConfirmed],
+                            [IsActive],[DateJoined]
+                        FROM [User]";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = await connection.QueryAsync<EndUser>(sql);
+            return result;
         }
 
         public async Task<Boolean> UpdateEntityAsync(EndUser user)
         {
-            var sql = $"{GetUpdateUserSql(user)}";
+            var sql =
+                $@"UPDATE [User]
+                   SET
+                    [Name] = @name,
+                    [LastName]= @lastName
+                   WHERE Id = @id";
 
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.ExecuteAsync(sql);
-                return result > 0;
-            }
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = await connection.ExecuteAsync(sql,
+                new
+                {
+                    id = user.Id,
+                    name = user.Name,
+                    lastName = user.LastName
+                });
+            return result > 0;
         }
 
-        public async Task<Boolean> UpdateUserEmailAsync(Int32 id, String email)
+        public async Task<Boolean> UpdateUserEmailAsync(Int32 id, String emailEncrypted)
         {
-            var sql = $"{GetUpdateUserEmailSql(id, email)}";
-
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.ExecuteAsync(sql);
-                return result > 0;
-            }
-
+            var sql =
+                $@"  UPDATE [User]
+                     SET [Email]= @email
+                     WHERE Id = @id";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = await connection.ExecuteAsync(sql,
+                new
+                {
+                    id = id,
+                    email = emailEncrypted
+                });
+            return result > 0;
         }
 
-        public async Task<Boolean> UpdateUserPasswordAsync(Int32 id, String password)
+        public async Task<Boolean> UpdateUserPasswordAsync(Int32 id, String passwordHashed)
         {
-            var sql = $"{GetUpdateUserPasswordSql(id, password)}";
-
-            using (var connection = new SqlConnection(appSettings.ConnectionString))
-            {
-                var result = await connection.ExecuteAsync(sql);
-                return result > 0;
-            }
-
+            var sql =
+                $@"  UPDATE [User]
+                     SET [Password]= @password
+                     WHERE Id = @id";
+            await using var connection = new SqlConnection(_connectionString_);
+            var result = await connection.ExecuteAsync(sql,
+                new
+                {
+                    id = id,
+                    password = passwordHashed
+                });
+            return result > 0;
         }
     }
 }

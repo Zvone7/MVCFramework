@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MvcFrameworkCml;
+using MvcFrameworkCml.DataModels;
 using MvcFrameworkCml.Transfer;
 
 namespace MvcFrameworkCml.Infrastructure.Managers
