@@ -18,7 +18,7 @@ namespace MvcFrameworkCml
         public String Salt { get; set; }
         public Boolean IsActive { get; set; }
         public Boolean EmailConfirmed { get; set; }
-        public DateTime? DateJoined { get; set; }
+        public DateTime DateJoined { get; set; }
         public String Role { get; set; }
 
         public override String ToString()

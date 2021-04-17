@@ -5,12 +5,12 @@ namespace MvcFrameworkCml.Infrastructure.Repository
 {
     public interface IEndUserRepository : IRepository<EndUser>
     {
-        Task<bool> TryAuthenticateAsync(String email, String password);
+        Task<bool> TryAuthenticateAsync(String emailEncrypted, String passwordEncrypted);
 
         Task<EndUser> GetUserWithSensitiveDataAsync(String email, Boolean mustBeActive = true);
 
-        Task<Boolean> UpdateUserEmailAsync(Int32 id, String email);
+        Task<Boolean> UpdateUserEmailAsync(Int32 id, String emailEncrypted);
 
-        Task<Boolean> UpdateUserPasswordAsync(Int32 id, String password);
+        Task<Boolean> UpdateUserPasswordAsync(Int32 id, String passwordHashed);
     }
 }

@@ -45,7 +45,7 @@ namespace MvcFrameworkDbl
             throw new NotImplementedException();
         }
 
-        public async Task<Boolean> TryAuthenticateAsync(String email, String password)
+        public async Task<Boolean> TryAuthenticateAsync(String emailEncrypted, String passwordEncrypted)
         {
             return true;
         }
@@ -59,12 +59,12 @@ namespace MvcFrameworkDbl
             return user;
         }
 
-        public Task<Boolean> UpdateUserEmailAsync(Int32 id, String email)
+        public Task<Boolean> UpdateUserEmailAsync(Int32 id, String emailEncrypted)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Boolean> UpdateUserPasswordAsync(Int32 id, String password)
+        public Task<Boolean> UpdateUserPasswordAsync(Int32 id, String passwordHashed)
         {
             throw new NotImplementedException();
         }
