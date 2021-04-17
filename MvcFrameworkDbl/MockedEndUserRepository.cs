@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MvcFrameworkCml;
+using MvcFrameworkCml.DataModels;
 using MvcFrameworkCml.Infrastructure.Repository;
 
 namespace MvcFrameworkDbl

@@ -29,7 +29,14 @@ COPY MvcFrameworkCml/. ./MvcFrameworkCml/
 WORKDIR /app/MvcFrameworkWeb
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/runtime:5.0 AS runtime
+
+# App configuration
+ENV ASPNETCORE_URLS="http://*:80"
+ENV LANG=C
+EXPOSE 80
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
 WORKDIR /app
 COPY --from=builddotnet /app/MvcFrameworkWeb/out ./
-ENTRYPOINT ["dotnet", "MvcFrameworkWeb.dll"]
+CMD ["./MvcFrameworkWeb"]

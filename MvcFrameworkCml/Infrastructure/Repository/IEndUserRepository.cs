@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MvcFrameworkCml.DataModels;
 
 namespace MvcFrameworkCml.Infrastructure.Repository
 {

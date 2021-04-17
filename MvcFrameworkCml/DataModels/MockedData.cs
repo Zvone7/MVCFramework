@@ -1,4 +1,4 @@
-﻿namespace MvcFrameworkCml
+﻿namespace MvcFrameworkCml.DataModels
 {
     public class MockedData
     {

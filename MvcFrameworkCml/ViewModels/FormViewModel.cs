@@ -1,5 +1,6 @@
 ﻿using MvcFrameworkCml;
 using System;
+using MvcFrameworkCml.DataModels;
 
 namespace MvcFrameworkCml.ViewModels
 {
