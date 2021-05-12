@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cssnano": "^5.0.2",
+    "is-svg": "^4.3.1",
     "postcss": "^8.2.15"
   }
 }
