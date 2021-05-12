@@ -1,1 +1,6 @@
-{}
+{
+  "dependencies": {
+    "cssnano": "^5.0.2",
+    "postcss": "^8.2.15"
+  }
+}
