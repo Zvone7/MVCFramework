@@ -27,7 +27,7 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/runtime": "^7.14.0",
     "acorn": "^8.2.4",
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "kind-of": "^6.0.3",
     "minimist": "^1.2.6",
     "sass": "^1.32.13",
